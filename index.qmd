@@ -1,6 +1,10 @@
 ---
-title: "Untitled"
-format: html
+title: "Exploring Penguin Species"
+format: dashboard
+editor: source
+theme: 
+    - cosmo
+author: "Y.M.Amali P. Rajapaksha"
 ---
 
 ## Quarto
