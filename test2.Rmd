@@ -821,7 +821,7 @@ Asia_new <- Asia_new %>%
 
 ## column {.tabset}
 
-### **Comparison of Sri Lanka with Top 10 Countries Reporting the Most COVID-19 Cases in the World** 
+### **Comparison of Sri Lanka with Top 10 Countries Reporting the Most COVID-19 Cases in the World**
 
 ```{r}
 g16 <- plot_ly(global, 
