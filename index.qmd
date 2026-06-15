@@ -277,7 +277,7 @@ srilanka_weekly_df <- srilanka_weekly_data |>
   )
 
 # Plot weekly dengue cases for each district
-p4 <- ggplot(srilanka_weekly_df, aes(x = week_start, y = cases)) +
+g4 <- ggplot(srilanka_weekly_df, aes(x = week_start, y = cases)) +
   geom_line(color = "darkblue", linewidth = 0.8) +
   facet_wrap(vars(district), scales = "free_y", ncol = 4) + # Cleaned up layout structure
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
@@ -296,7 +296,7 @@ p4 <- ggplot(srilanka_weekly_df, aes(x = week_start, y = cases)) +
     axis.title.y = element_text(size = 28)
   )
 
-p4
+g4
 ```
 
 
@@ -606,7 +606,7 @@ dropdown_selector <- tags$select(
 browsable(
   tags$div(
     style = "padding: 10px; background: #fff; border-radius: 5px;",
-    tags$label(tags$strong("Select Dashboard Analysis Focus:")),
+    tags$label(tags$strong("Select District:")),
     tags$div(style = "margin-top: 5px;", dropdown_selector),
     plot_containers
   )
