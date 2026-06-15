@@ -1,0 +1,13 @@
+.value-box-title {
+  font-size: 1rem !important;
+  font-weight: 600;
+}
+
+.value-box-value {
+  font-size: 2.5rem !important;
+  font-weight: bold;
+}
+
+.value-box-icon i {
+  font-size: 1.5rem !important;
+}
