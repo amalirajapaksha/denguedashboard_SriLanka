@@ -1,6 +1,8 @@
 ---
 title: "Sri Lanka Dengue Dashboard"
-format: dashboard
+format:
+  dashboard:
+    css: styles.css
 editor: source
 theme: 
     - cosmo
@@ -52,11 +54,11 @@ weekly_cases_by_date <- weekly_2026 |>
 
 # Overview
 
-**Latest Dengue Surveillance Summary**
-**Last Updated:** `r format(Sys.Date(), "%A, %B %d, %Y")` | Latest local data available for:** May 17, 2026
+**Latest Dengue Surveillance Summary**\
+**Last Updated:** `r format(Sys.Date(), "%A, %B %d, %Y")` | **Latest local data available for:** May 17, 2026
 
 
-## Row {height="15%"}
+## Row {height="20%"}
 
 ```{r}
 #| content: valuebox
@@ -91,7 +93,7 @@ weekly_2026 |>
 ```
 
 
-## Row {height="70%"}
+## Row {height="65%"}
 
 ### Column {width="40%"}
 
