@@ -1,3 +1,7 @@
+/* ==========================================================================
+   VALUE-BOX CUSTOM 
+   ========================================================================== */
+
 .value-box-title {
   font-size: 1rem !important;
   font-weight: 600;
@@ -11,3 +15,81 @@
 .value-box-icon i {
   font-size: 1.5rem !important;
 }
+
+.quarto-dashboard-container {
+  overflow-y: auto !important;
+}
+
+
+
+/* ==========================================================================
+   DASHBOARD CUSTOM COLOR THEME
+   ========================================================================== */
+
+/* Dashboard Header */
+.quarto-dashboard-header {
+  background-color: #0b1f3a !important; /* Navy Blue */
+  color: white !important;
+}
+
+/* Dashboard Title */
+.quarto-dashboard-header .title {
+  color: white !important;
+  font-weight: 700;
+}
+
+/* Tab Navigation */
+.nav-tabs .nav-link {
+  color: #0b1f3a !important;
+  background-color: #f8f9fa !important;
+  font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #0b1f3a !important;
+  color: white !important;
+  border-color: #0b1f3a !important;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #0b1f3a !important;
+}
+
+/* Dashboard Background */
+body.dashboard-page {
+  background-color: #f4f6f9 !important;
+}
+
+/* Cards */
+.card {
+  border-radius: 8px;
+}
+
+.card-header {
+  background-color: #eef1f6 !important;
+  color: #0b1f3a !important;
+  font-weight: 600;
+}
+
+/* 2. Tab Set Bars & Navigation Links */
+.nav-tabs .nav-link {
+  color: #495057 !important;            /* Font color for inactive tabs */
+  background-color: #f8f9fa !important;  /* Soft grey background for unselected tabs */
+  border: 1px solid #dee2e6 !important;
+  font-weight: 500;
+}
+
+/* Active (Currently Selected) Tab Styling */
+.nav-tabs .nav-link.active {
+  color: #ffffff !important;
+  background-color: #3b0f70 !important; /* Accent color matching your dygraph lines */
+  border-color: #3b0f70 !important;
+  font-weight: bold;
+}
+
+/* Hover Effect over Tabs */
+.nav-tabs .nav-link:hover:not(.active) {
+  background-color: #e9ecef !important;
+  color: #00BFFF !important;
+}
+
