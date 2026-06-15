@@ -4,8 +4,6 @@ format:
   dashboard:
     css: styles.css
 editor: source
-theme: 
-    - cosmo
 ---
 
 ```{r}
@@ -16,24 +14,31 @@ library(denguedatahub)
 library(ceylon)
 library(ggplot2)
 library(tidyverse)
+library(dplyr)
 library(readr)
 library(here)
 library(stringdist)
 library(sf)
 library(viridis)
 library(cartogram)
+library(ISOweek)
+library(lubridate)
+library(xts)
+library(dygraphs)
+library(crosstalk)
+library(leaflet)
 library(scales) # For percentage formatting
 library(RColorBrewer) # For Dark2 color palette
 library(plotly)
 library(GGally)
-library(crosstalk)
+library(htmltools)
 ```
 
 ```{r}
 #| label: load-data
 #| message: false
 #| warning: false
-weakly_upto2025 <- data(srilanka_weekly_data)
+data(srilanka_weekly_data)
 
 weekly_2026     <- read_csv(here("data","sri_lanka_weekly_dengue_cases_2026.csv"))
 weekly_2026$year <- as.numeric(weekly_2026$year)
@@ -55,8 +60,7 @@ weekly_cases_by_date <- weekly_2026 |>
 # Overview
 
 **Latest Dengue Surveillance Summary**\
-**Last Updated:** `r format(Sys.Date(), "%A, %B %d, %Y")` | **Latest local data available for:** May 17, 2026
-
+**Last Updated:** `r format(Sys.Date(), "%A, %B %d, %Y")` \| **Latest local data available for:** May 17, 2026
 
 ## Row {height="20%"}
 
@@ -92,12 +96,12 @@ weekly_2026 |>
   pull(district)
 ```
 
-
 ## Row {height="65%"}
 
 ### Column {width="40%"}
 
 ```{r}
+#| label: map1
 #| echo: false
 #| message: false
 #| warning: false
@@ -158,6 +162,7 @@ g1
 ### Column {width="40%"}
 
 ```{r}
+#| label: map2
 #| echo: false
 #| message: false
 #| warning: false
@@ -203,6 +208,7 @@ g2
 ### Column {width="40%"}
 
 ```{r}
+#| label: TS1
 #| echo: false
 #| message: false
 #| warning: false
@@ -246,4 +252,362 @@ g3 <- g3 |>
 g3
 ```
 
+# District-wise Time Series Trends
 
+## Column {.tabset}
+
+### Overview of District Trends
+
+#### Column {width="70%"}
+
+```{r}
+#| label: TS2
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 40
+#| fig-height: 20
+
+ 
+srilanka_weekly_df <- srilanka_weekly_data |>
+  mutate(
+    year_week = paste0(year, "-W", sprintf("%02d", week)),  
+    week_start = ISOweek2date(paste0(year_week, "-1"))      
+  )
+
+# Plot weekly dengue cases for each district
+p4 <- ggplot(srilanka_weekly_df, aes(x = week_start, y = cases)) +
+  geom_line(color = "darkblue", linewidth = 0.8) +
+  facet_wrap(vars(district), scales = "free_y", ncol = 4) + # Cleaned up layout structure
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  labs(
+    x = "Year",
+    y = "Weekly dengue cases",
+    #title = "Weekly Dengue Cases by District in Sri Lanka"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 24, face = "bold"),
+    axis.text.y = element_text(size = 24, face = "bold"),
+    strip.text = element_text(size = 24, face = "bold"),
+    plot.title = element_text(size = 26, face = "bold", margin = margin(b = 10)),
+    axis.title.x = element_text(size = 28),
+    axis.title.y = element_text(size = 28)
+  )
+
+p4
+```
+
+
+### Explore Individual District Trends
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+data(srilanka_weekly_data)
+# 1. Clean date format and ensure chronological order
+srilanka_weekly <- srilanka_weekly_data |>
+  mutate(start.date = mdy(start.date)) |>
+  arrange(start.date)
+
+# 2. Build individual time-series objects for your specific districts
+# --- Colombo ---
+colombo_data <- srilanka_weekly |> filter(district == "Colombo")
+colombo_xts  <- xts(colombo_data$cases, order.by = colombo_data$start.date)
+colnames(colombo_xts) <- "Cases"
+
+g_colombo <- dygraph(colombo_xts, main = "Colombo: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |>
+  dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Gampaha ---
+gampaha_data <- srilanka_weekly |> filter(district == "Gampaha")
+gampaha_xts  <- xts(gampaha_data$cases, order.by = gampaha_data$start.date)
+colnames(gampaha_xts) <- "Cases"
+
+g_gampaha <- dygraph(gampaha_xts, main = "Gampaha: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |>
+  dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Kalutara ---
+kalutara_data <- srilanka_weekly |> filter(district == "Kalutara")
+kalutara_xts  <- xts(kalutara_data$cases, order.by = kalutara_data$start.date)
+colnames(kalutara_xts) <- "Cases"
+
+g_kalutara <- dygraph(kalutara_xts, main = "Kalutara: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |>
+  dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Kandy ---
+kandy_data <- srilanka_weekly |> filter(district == "Kandy")
+kandy_xts  <- xts(kandy_data$cases, order.by = kandy_data$start.date)
+colnames(kandy_xts) <- "Cases"
+
+g_kandy <- dygraph(kandy_xts, main = "Kandy: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |>
+  dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Matale ---
+matale_data <- srilanka_weekly |> filter(district == "Matale")
+matale_xts  <- xts(matale_data$cases, order.by = matale_data$start.date)
+colnames(matale_xts) <- "Cases"
+
+g_matale <- dygraph(matale_xts, main = "Matale: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Nuwara Eliya ---
+nuwara_eliya_data <- srilanka_weekly |> filter(district == "NuwaraEliya")
+nuwara_eliya_xts  <- xts(nuwara_eliya_data$cases, order.by = nuwara_eliya_data$start.date)
+colnames(nuwara_eliya_xts) <- "Cases"
+
+g_nuwara_eliya <- dygraph(nuwara_eliya_xts, main = "Nuwara Eliya: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Galle ---
+galle_data <- srilanka_weekly |> filter(district == "Galle")
+galle_xts  <- xts(galle_data$cases, order.by = galle_data$start.date)
+colnames(galle_xts) <- "Cases"
+
+g_galle <- dygraph(galle_xts, main = "Galle: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Matara ---
+matara_data <- srilanka_weekly |> filter(district == "Matara")
+matara_xts  <- xts(matara_data$cases, order.by = matara_data$start.date)
+colnames(matara_xts) <- "Cases"
+
+g_matara <- dygraph(matara_xts, main = "Matara: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Hambantota ---
+hambantota_data <- srilanka_weekly |> filter(district == "Hambanthota")
+hambantota_xts  <- xts(hambantota_data$cases, order.by = hambantota_data$start.date)
+colnames(hambantota_xts) <- "Cases"
+
+g_hambantota <- dygraph(hambantota_xts, main = "Hambanthota: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Jaffna ---
+jaffna_data <- srilanka_weekly |> filter(district == "Jaffna")
+jaffna_xts  <- xts(jaffna_data$cases, order.by = jaffna_data$start.date)
+colnames(jaffna_xts) <- "Cases"
+
+g_jaffna <- dygraph(jaffna_xts, main = "Jaffna: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Kilinochchi ---
+kilinochchi_data <- srilanka_weekly |> filter(district == "Kilinochchi")
+kilinochchi_xts  <- xts(kilinochchi_data$cases, order.by = kilinochchi_data$start.date)
+colnames(kilinochchi_xts) <- "Cases"
+
+g_kilinochchi <- dygraph(kilinochchi_xts, main = "Kilinochchi: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Mannar ---
+mannar_data <- srilanka_weekly |> filter(district == "Mannar")
+mannar_xts  <- xts(mannar_data$cases, order.by = mannar_data$start.date)
+colnames(mannar_xts) <- "Cases"
+
+g_mannar <- dygraph(mannar_xts, main = "Mannar: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Vavuniya ---
+vavuniya_data <- srilanka_weekly |> filter(district == "Vavuniya")
+vavuniya_xts  <- xts(vavuniya_data$cases, order.by = vavuniya_data$start.date)
+colnames(vavuniya_xts) <- "Cases"
+
+g_vavuniya <- dygraph(vavuniya_xts, main = "Vavuniya: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Mullaitivu ---
+mullaitivu_data <- srilanka_weekly |> filter(district == "Mullaitivu")
+mullaitivu_xts  <- xts(mullaitivu_data$cases, order.by = mullaitivu_data$start.date)
+colnames(mullaitivu_xts) <- "Cases"
+
+g_mullaitivu <- dygraph(mullaitivu_xts, main = "Mullaitivu: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Batticaloa ---
+batticaloa_data <- srilanka_weekly |> filter(district == "Batticaloa")
+batticaloa_xts  <- xts(batticaloa_data$cases, order.by = batticaloa_data$start.date)
+colnames(batticaloa_xts) <- "Cases"
+
+g_batticaloa <- dygraph(batticaloa_xts, main = "Batticaloa: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Ampara ---
+ampara_data <- srilanka_weekly |> filter(district == "Ampara")
+ampara_xts  <- xts(ampara_data$cases, order.by = ampara_data$start.date)
+colnames(ampara_xts) <- "Cases"
+
+g_ampara <- dygraph(ampara_xts, main = "Ampara: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Trincomalee ---
+trincomalee_data <- srilanka_weekly |> filter(district == "Trincomalee")
+trincomalee_xts  <- xts(trincomalee_data$cases, order.by = trincomalee_data$start.date)
+colnames(trincomalee_xts) <- "Cases"
+
+g_trincomalee <- dygraph(trincomalee_xts, main = "Trincomalee: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Kurunegala ---
+kurunegala_data <- srilanka_weekly |> filter(district == "Kurunegala")
+kurunegala_xts  <- xts(kurunegala_data$cases, order.by = kurunegala_data$start.date)
+colnames(kurunegala_xts) <- "Cases"
+
+g_kurunegala <- dygraph(kurunegala_xts, main = "Kurunegala: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Puttalam ---
+puttalam_data <- srilanka_weekly |> filter(district == "Puttalam")
+puttalam_xts  <- xts(puttalam_data$cases, order.by = puttalam_data$start.date)
+colnames(puttalam_xts) <- "Cases"
+
+g_puttalam <- dygraph(puttalam_xts, main = "Puttalam: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Anuradhapura ---
+anuradhapura_data <- srilanka_weekly |> filter(district == "Anuradhapura")
+anuradhapura_xts  <- xts(anuradhapura_data$cases, order.by = anuradhapura_data$start.date)
+colnames(anuradhapura_xts) <- "Cases"
+
+g_anuradhapura <- dygraph(anuradhapura_xts, main = "Anuradhapura: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Polonnaruwa ---
+polonnaruwa_data <- srilanka_weekly |> filter(district == "Polonnaruwa")
+polonnaruwa_xts  <- xts(polonnaruwa_data$cases, order.by = polonnaruwa_data$start.date)
+colnames(polonnaruwa_xts) <- "Cases"
+
+g_polonnaruwa <- dygraph(polonnaruwa_xts, main = "Polonnaruwa: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Badulla ---
+badulla_data <- srilanka_weekly |> filter(district == "Badulla")
+badulla_xts  <- xts(badulla_data$cases, order.by = badulla_data$start.date)
+colnames(badulla_xts) <- "Cases"
+
+g_badulla <- dygraph(badulla_xts, main = "Badulla: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Moneragala ---
+moneragala_data <- srilanka_weekly |> filter(district == "Monaragala")
+moneragala_xts  <- xts(moneragala_data$cases, order.by = moneragala_data$start.date)
+colnames(moneragala_xts) <- "Cases"
+
+g_moneragala <- dygraph(moneragala_xts, main = "Monaragala: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Ratnapura ---
+ratnapura_data <- srilanka_weekly |> filter(district == "Ratnapura")
+ratnapura_xts  <- xts(ratnapura_data$cases, order.by = ratnapura_data$start.date)
+colnames(ratnapura_xts) <- "Cases"
+
+g_ratnapura <- dygraph(ratnapura_xts, main = "Ratnapura: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Kegalle ---
+kegalle_data <- srilanka_weekly |> filter(district == "Kegalle")
+kegalle_xts  <- xts(kegalle_data$cases, order.by = kegalle_data$start.date)
+colnames(kegalle_xts) <- "Cases"
+
+g_kegalle <- dygraph(kegalle_xts, main = "Kegalle: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# --- Kalmunai ---
+kalmunai_data <- srilanka_weekly |> filter(district == "Kalmune")
+kalmunai_xts  <- xts(kalmunai_data$cases, order.by = kalmunai_data$start.date)
+colnames(kalmunai_xts) <- "Cases"
+
+g_kalmunai <- dygraph(kalmunai_xts, main = "Kalmune: Weekly Dengue Cases") |>
+  dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
+
+# 3. Wrap each plot in a structured HTML container (Default Colombo to visible)
+plot_containers <- tags$div(
+  style = "width: 100%; margin-top: 15px;",
+  
+  tags$div(id = "plot-colombo", class = "district-plot", style = "display: block;", g_colombo),
+  tags$div(id = "plot-gampaha", class = "district-plot", style = "display: none;", g_gampaha),
+  tags$div(id = "plot-kalutara", class = "district-plot", style = "display: none;", g_kalutara),
+  tags$div(id = "plot-kandy", class = "district-plot", style = "display: none;", g_kandy),
+  tags$div(id = "plot-matale", class = "district-plot", style = "display: none;", g_matale),
+  tags$div(id = "plot-nuwara-eliya", class = "district-plot", style = "display: none;", g_nuwara_eliya),
+  tags$div(id = "plot-galle", class = "district-plot", style = "display: none;", g_galle),
+  tags$div(id = "plot-matara", class = "district-plot", style = "display: none;", g_matara),
+  tags$div(id = "plot-hambantota", class = "district-plot", style = "display: none;", g_hambantota),
+  tags$div(id = "plot-jaffna", class = "district-plot", style = "display: none;", g_jaffna),
+  tags$div(id = "plot-kilinochchi", class = "district-plot", style = "display: none;", g_kilinochchi),
+  tags$div(id = "plot-mannar", class = "district-plot", style = "display: none;", g_mannar),
+  tags$div(id = "plot-vavuniya", class = "district-plot", style = "display: none;", g_vavuniya),
+  tags$div(id = "plot-mullaitivu", class = "district-plot", style = "display: none;", g_mullaitivu),
+  tags$div(id = "plot-batticaloa", class = "district-plot", style = "display: none;", g_batticaloa),
+  tags$div(id = "plot-ampara", class = "district-plot", style = "display: none;", g_ampara),
+  tags$div(id = "plot-trincomalee", class = "district-plot", style = "display: none;", g_trincomalee),
+  tags$div(id = "plot-kurunegala", class = "district-plot", style = "display: none;", g_kurunegala),
+  tags$div(id = "plot-puttalam", class = "district-plot", style = "display: none;", g_puttalam),
+  tags$div(id = "plot-anuradhapura", class = "district-plot", style = "display: none;", g_anuradhapura),
+  tags$div(id = "plot-polonnaruwa", class = "district-plot", style = "display: none;", g_polonnaruwa),
+  tags$div(id = "plot-badulla", class = "district-plot", style = "display: none;", g_badulla),
+  tags$div(id = "plot-moneragala", class = "district-plot", style = "display: none;", g_moneragala),
+  tags$div(id = "plot-ratnapura", class = "district-plot", style = "display: none;", g_ratnapura),
+  tags$div(id = "plot-kegalle", class = "district-plot", style = "display: none;", g_kegalle),
+  tags$div(id = "plot-kalmunai", class = "district-plot", style = "display: none;", g_kalmunai)
+)
+
+# 4. Design the Selector Dropdown Menu
+dropdown_selector <- tags$select(
+  id = "custom-district-selector",
+  class = "form-select",
+  style = "width: 100%; max-width: 300px; padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px;",
+  onchange = "
+    // Hide all plot containers
+    document.querySelectorAll('.district-plot').forEach(el => el.style.display = 'none');
+    
+    // Show only the selected container
+    const targetedPlot = document.getElementById(this.value);
+    if (targetedPlot) { targetedPlot.style.display = 'block'; }
+    
+    // Force dygraphs to redraw perfectly inside the unhidden space
+    window.dispatchEvent(new Event('resize'));
+  ",
+  tags$option(value = "plot-colombo", "Colombo"),
+  tags$option(value = "plot-gampaha", "Gampaha"),
+  tags$option(value = "plot-kalutara", "Kalutara"),
+  tags$option(value = "plot-kandy", "Kandy"),
+  tags$option(value = "plot-matale", "Matale"),
+  tags$option(value = "plot-nuwara-eliya", "Nuwara Eliya"),
+  tags$option(value = "plot-galle", "Galle"),
+  tags$option(value = "plot-matara", "Matara"),
+  tags$option(value = "plot-hambantota", "Hambanthota"),
+  tags$option(value = "plot-jaffna", "Jaffna"),
+  tags$option(value = "plot-kilinochchi", "Kilinochchi"),
+  tags$option(value = "plot-mannar", "Mannar"),
+  tags$option(value = "plot-vavuniya", "Vavuniya"),
+  tags$option(value = "plot-mullaitivu", "Mullaitivu"),
+  tags$option(value = "plot-batticaloa", "Batticaloa"),
+  tags$option(value = "plot-ampara", "Ampara"),
+  tags$option(value = "plot-trincomalee", "Trincomalee"),
+  tags$option(value = "plot-kurunegala", "Kurunegala"),
+  tags$option(value = "plot-puttalam", "Puttalam"),
+  tags$option(value = "plot-anuradhapura", "Anuradhapura"),
+  tags$option(value = "plot-polonnaruwa", "Polonnaruwa"),
+  tags$option(value = "plot-badulla", "Badulla"),
+  tags$option(value = "plot-moneragala", "Monaragala"),
+  tags$option(value = "plot-ratnapura", "Ratnapura"),
+  tags$option(value = "plot-kegalle", "Kegalle"),
+  tags$option(value = "plot-kalmunai", "Kalmune")
+)
+
+# 5. Output components cleanly as a stacked UI block
+browsable(
+  tags$div(
+    style = "padding: 10px; background: #fff; border-radius: 5px;",
+    tags$label(tags$strong("Select Dashboard Analysis Focus:")),
+    tags$div(style = "margin-top: 5px;", dropdown_selector),
+    plot_containers
+  )
+)
+```
