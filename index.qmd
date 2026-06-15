@@ -1,29 +1,247 @@
 ---
-title: "Exploring Penguin Species"
+title: "Sri Lanka Dengue Dashboard"
 format: dashboard
 editor: source
 theme: 
     - cosmo
-author: "Y.M.Amali P. Rajapaksha"
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
 ```{r}
-1 + 1
+#| label: load-packages
+#| message: false
+#| warning: false
+library(denguedatahub)
+library(ceylon)
+library(ggplot2)
+library(tidyverse)
+library(readr)
+library(here)
+library(stringdist)
+library(sf)
+library(viridis)
+library(cartogram)
+library(scales) # For percentage formatting
+library(RColorBrewer) # For Dark2 color palette
+library(plotly)
+library(GGally)
+library(crosstalk)
 ```
 
-You can add options to executable code like this
+```{r}
+#| label: load-data
+#| message: false
+#| warning: false
+weakly_upto2025 <- data(srilanka_weekly_data)
+
+weekly_2026     <- read_csv(here("data","sri_lanka_weekly_dengue_cases_2026.csv"))
+weekly_2026$year <- as.numeric(weekly_2026$year)
+weekly_2026$week <- as.numeric(weekly_2026$week)
+weekly_2026$start.date <- as.Date(weekly_2026$start.date)
+weekly_2026$district <- as.character(weekly_2026$district)
+weekly_2026$cases <- as.numeric(weekly_2026$cases)
+```
+
+```{r}
+#| label: cleandata
+
+weekly_cases_by_date <- weekly_2026 |>
+  group_by(start.date) |>
+  summarise(weekly_cases = sum(cases, na.rm = TRUE)) |>
+  arrange(start.date)
+```
+
+# Overview
+
+**Latest Dengue Surveillance Summary**
+**Last Updated:** `r format(Sys.Date(), "%A, %B %d, %Y")` | Latest local data available for:** May 17, 2026
+
+
+## Row {height="15%"}
+
+```{r}
+#| content: valuebox
+#| title: "Total Cases in 2026"
+#| color: "#d95f02"
+#| icon: "virus"
+
+sum(weekly_2026$cases, na.rm = TRUE)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Average Weekly Cases in 2026"
+#| color: "#7570b3"
+#| icon: "calendar-week"
+
+round(sum(weekly_2026$cases, na.rm = TRUE)/20)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Highest Risk District in 2026"
+#| icon: "geo-alt"
+#| color: "#1b9e77"
+
+weekly_2026 |>
+  group_by(district) |>
+  summarise(total_cases = sum(cases, na.rm = TRUE)) |>
+  arrange(desc(total_cases)) |>
+  slice(1) |>
+  pull(district)
+```
+
+
+## Row {height="70%"}
+
+### Column {width="40%"}
 
 ```{r}
 #| echo: false
-2 * 2
+#| message: false
+#| warning: false
+
+
+district_df <- weekly_2026 |>
+  group_by(district) |>       
+  summarise(Count = sum(cases), .groups = "drop")  
+
+data(district)
+district_df <- district_df |>
+  mutate(district_clean = toupper(trimws(district)))
+
+district_sf <- district |>
+  mutate(DISTRICT_clean = toupper(trimws(DISTRICT)))
+
+district_df <- district_df |>
+  rowwise() |>
+  mutate(
+    DISTRICT_match = district_sf$DISTRICT_clean[
+      amatch(district_clean, district_sf$DISTRICT_clean, maxDist = 3)
+    ]
+  ) |>
+  ungroup()
+
+district_df2 <- as.data.frame(district_df)
+
+map_data <- left_join(
+  district_sf,
+  district_df2,
+  by = c("DISTRICT_clean" = "DISTRICT_match")
+)
+
+
+g1 <- ggplotly(ggplot(map_data) +
+  geom_sf(aes(fill = Count, text = paste('District:', district))) +
+  labs(title = "Map for Total Dengue Cases in 2026") +  
+  scale_fill_viridis() +
+  theme_minimal()+
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    plot.margin = margin(0, 0, 0, 0)
+  ))
+
+g1 <- g1 |>
+  layout(
+    title = list(
+      text = "Map for Total Dengue Cases in 2026",
+      font = list(size = 16)   
+    ))
+
+g1
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+### Column {width="40%"}
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+map_data <- map_data |>
+  mutate(
+    risk = Count / population
+  )
+
+map_data <- map_data |>
+  filter(!is.na(risk) & risk > 0)
+
+dorl <- cartogram_dorling(map_data, weight = "population") |>
+  st_as_sf()
+
+g2 <- ggplotly(
+  ggplot(dorl) +
+    geom_sf(data = map_data) +
+    geom_sf(aes(
+      fill = Count,
+      text = paste(
+        "District:", DISTRICT_clean
+      )
+    )) +
+    labs(title = "Map for Dengue Cases in 2026 weighted by population") +
+    scale_fill_viridis()+
+  theme(axis.text.x = element_blank(), 
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        rect = element_blank())
+)
+
+g2 <- g2 |>
+  layout(
+    title = list(
+      text = "Map for Dengue Cases in 2026 weighted by population",
+      font = list(size = 15)   
+    ))
+
+g2
+```
+
+### Column {width="40%"}
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+g3 <- ggplotly(ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases,)) +
+      geom_line(size = 1, col = "#3b0f70") +           
+      geom_point(size = 1, col = "#3b0f70") +
+      scale_color_viridis_d() +
+      scale_x_date(
+    date_labels = "%b %d",   
+    date_breaks = "2 weeks") +
+      labs(
+        title = "Weekly Dengue Cases in 2026",
+        x = "Date (Month-Day)",
+        y = "Cases"
+      ) +
+      theme_minimal(base_size = 14)
+    )
+
+g3 <- g3 |>
+  layout(
+    title = list(
+      text = "Weekly Dengue Cases in 2026",
+      font = list(size = 16)   
+    ),
+
+    xaxis = list(
+      title = "Date (Month-Day)",
+      titlefont = list(size = 14),   
+      tickfont = list(size = 8),    
+      tickangle = -60                  
+    ),
+
+    yaxis = list(
+      title = "Cases",
+      titlefont = list(size = 14),
+      tickfont = list(size = 12)
+    )
+  )
+
+g3
+```
+
+
