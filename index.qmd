@@ -27,11 +27,13 @@ library(xts)
 library(dygraphs)
 library(crosstalk)
 library(leaflet)
+library(htmltools)
+library(plotly)
+library(shiny)
+library(RColorBrewer)
 library(scales) # For percentage formatting
 library(RColorBrewer) # For Dark2 color palette
-library(plotly)
 library(GGally)
-library(htmltools)
 ```
 
 ```{r}
@@ -151,7 +153,7 @@ g1 <- ggplotly(ggplot(map_data) +
 g1 <- g1 |>
   layout(
     title = list(
-      text = "Map for Total Dengue Cases in 2026",
+      text = "Map for Distribution of Total Dengue Cases in 2026",
       font = list(size = 16)   
     ))
 
@@ -167,13 +169,14 @@ g1
 #| message: false
 #| warning: false
 
-map_data <- map_data |>
-  mutate(
-    risk = Count / population
-  )
 
 map_data <- map_data |>
-  filter(!is.na(risk) & risk > 0)
+mutate(
+risk = Count / population
+)
+
+map_data <- map_data |>
+filter(!is.na(risk) & risk > 0)
 
 dorl <- cartogram_dorling(map_data, weight = "population") |>
   st_as_sf()
@@ -196,11 +199,11 @@ g2 <- ggplotly(
 )
 
 g2 <- g2 |>
-  layout(
+    layout(
     title = list(
-      text = "Map for Dengue Cases in 2026 weighted by population",
-      font = list(size = 15)   
-    ))
+       text = "Map for Dengue Cases in 2026 weighted by population",
+       font = list(size = 15)   
+     ))
 
 g2
 ```
@@ -238,7 +241,7 @@ g3 <- g3 |>
     xaxis = list(
       title = "Date (Month-Day)",
       titlefont = list(size = 14),   
-      tickfont = list(size = 8),    
+      tickfont = list(size = 10),    
       tickangle = -60                  
     ),
 
@@ -259,7 +262,6 @@ g3
 
 ### Overview of District Trends
 
-#### Column {width="70%"}
 
 ```{r}
 #| label: TS2
@@ -276,15 +278,13 @@ srilanka_weekly_df <- srilanka_weekly_data |>
     week_start = ISOweek2date(paste0(year_week, "-1"))      
   )
 
-# Plot weekly dengue cases for each district
 g4 <- ggplot(srilanka_weekly_df, aes(x = week_start, y = cases)) +
   geom_line(color = "darkblue", linewidth = 0.8) +
-  facet_wrap(vars(district), scales = "free_y", ncol = 4) + # Cleaned up layout structure
+  facet_wrap(vars(district), scales = "free_y", ncol = 4) + 
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
   labs(
     x = "Year",
-    y = "Weekly dengue cases",
-    #title = "Weekly Dengue Cases by District in Sri Lanka"
+    y = "Weekly dengue cases"
   ) +
   theme_minimal() +
   theme(
@@ -303,17 +303,16 @@ g4
 ### Explore Individual District Trends
 
 ```{r}
+#| label: TS3
 #| echo: false
 #| warning: false
 #| message: false
 
-data(srilanka_weekly_data)
-# 1. Clean date format and ensure chronological order
+
 srilanka_weekly <- srilanka_weekly_data |>
   mutate(start.date = mdy(start.date)) |>
   arrange(start.date)
 
-# 2. Build individual time-series objects for your specific districts
 # --- Colombo ---
 colombo_data <- srilanka_weekly |> filter(district == "Colombo")
 colombo_xts  <- xts(colombo_data$cases, order.by = colombo_data$start.date)
@@ -526,7 +525,7 @@ colnames(kalmunai_xts) <- "Cases"
 g_kalmunai <- dygraph(kalmunai_xts, main = "Kalmune: Weekly Dengue Cases") |>
   dyRangeSelector(height = 40) |> dyOptions(strokeWidth = 2.5, drawGrid = TRUE, colors = "#1b9e77")
 
-# 3. Wrap each plot in a structured HTML container (Default Colombo to visible)
+
 plot_containers <- tags$div(
   style = "width: 100%; margin-top: 15px;",
   
@@ -558,7 +557,7 @@ plot_containers <- tags$div(
   tags$div(id = "plot-kalmunai", class = "district-plot", style = "display: none;", g_kalmunai)
 )
 
-# 4. Design the Selector Dropdown Menu
+
 dropdown_selector <- tags$select(
   id = "custom-district-selector",
   class = "form-select",
@@ -602,7 +601,7 @@ dropdown_selector <- tags$select(
   tags$option(value = "plot-kalmunai", "Kalmune")
 )
 
-# 5. Output components cleanly as a stacked UI block
+
 browsable(
   tags$div(
     style = "padding: 10px; background: #fff; border-radius: 5px;",
@@ -612,3 +611,270 @@ browsable(
   )
 )
 ```
+
+# District-wise Seasonal Plots
+
+## Column {.tabset}
+
+### District Overview
+
+```{r}
+#| label: Seasonal1
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 40
+#| fig-height: 20
+
+
+srilanka_weekly_seasonal <- srilanka_weekly_data |>
+  mutate(
+    year_week = paste0(year, "-W", sprintf("%02d", week)),  
+    week_start = ISOweek2date(paste0(year_week, "-1"))      
+  ) |>
+  filter(year_week >= 2020)
+
+
+srilanka_weekly_seasonal <- srilanka_weekly_seasonal |>
+  mutate(week_of_year = isoweek(week_start))  
+
+g5 <- ggplot(srilanka_weekly_seasonal, 
+                     aes(x = week_of_year, y = cases, group = year, color = factor(year))) +
+  geom_line(size=2) +
+  facet_wrap(vars(district), scales = "free_y", ncol = 5) +
+  scale_x_continuous(breaks = seq(1, 52, by = 4)) + 
+  labs(
+    x = "Week of Year",
+    y = "Weekly Dengue Cases",
+    color = "Year",
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 24, face = "bold"),
+    axis.text.y = element_text(size = 24, face = "bold"),
+    strip.text = element_text(size = 24, face = "bold"),
+    plot.title = element_text(size = 26, face = "bold", margin = margin(b = 10)),
+    axis.title.x = element_text(size = 28),
+    axis.title.y = element_text(size = 28),
+    legend.title = element_text(size = 26, face = "bold"),
+    legend.text  = element_text(size = 24),
+    legend.key.size = unit(1.5, "cm")
+  ) + scale_color_brewer(palette = "Paired")
+
+g5
+```
+
+
+### Individual District Analysis
+
+```{r}
+seasonal <- function(dis_name) {
+
+  dis <- srilanka_weekly_seasonal |>
+    dplyr::filter(district == dis_name)
+
+  ggplotly(
+    ggplot(
+      dis,
+      aes(
+        x = week_of_year,
+        y = cases,
+        group = year,
+        color = factor(year)
+      )
+    ) +
+      geom_line() +
+      scale_x_continuous(breaks = seq(1, 52, by = 4)) +
+      scale_color_viridis_d(option = "viridis") +
+      labs(
+        title = paste("Seasonal Plot -", dis_name),
+        x = "Week of Year",
+        y = "Weekly Dengue Cases",
+        color = "Year"
+      ) +
+      theme_minimal()
+  )
+}
+```
+
+#### Column {.tabset}
+
+##### Colombo
+
+```{r}
+seasonal("Colombo")
+```
+
+##### Gampaha
+
+```{r}
+seasonal("Gampaha")
+```
+
+##### Kalutara
+
+```{r}
+seasonal("Kalutara")
+```
+
+##### Kandy
+
+```{r}
+seasonal("Kandy")
+```
+
+##### Matale
+
+```{r}
+seasonal("Matale")
+```
+
+##### NuwaraEliya
+
+```{r}
+seasonal("NuwaraEliya")
+```
+
+##### Galle
+
+```{r}
+seasonal("Galle")
+```
+
+##### Hambanthota
+
+```{r}
+seasonal("Hambanthota")
+```
+
+##### Matara
+
+```{r}
+seasonal("Matara")
+```
+
+##### Jaffna
+
+```{r}
+seasonal("Jaffna")
+```
+
+##### Kilinochchi
+
+```{r}
+seasonal("Kilinochchi")
+```
+
+##### Mannar
+
+```{r}
+seasonal("Mannar")
+```
+
+##### Vavuniya
+
+```{r}
+seasonal("Vavuniya")
+```
+
+##### Mullaitivu
+
+```{r}
+seasonal("Mullaitivu")
+```
+
+##### Batticaloa
+
+```{r}
+seasonal("Batticaloa")
+```
+
+##### Ampara
+
+```{r}
+seasonal("Ampara")
+```
+
+##### Trincomalee
+
+```{r}
+seasonal("Trincomalee")
+```
+
+##### Kurunegala
+
+```{r}
+seasonal("Kurunegala")
+```
+
+##### Puttalam
+
+```{r}
+seasonal("Puttalam")
+```
+
+##### Anuradhapura
+
+```{r}
+seasonal("Anuradhapura")
+```
+
+##### Polonnaruwa
+
+```{r}
+seasonal("Polonnaruwa")
+```
+
+##### Badulla
+
+```{r}
+seasonal("Badulla")
+```
+
+##### Monaragala
+
+```{r}
+seasonal("Monaragala")
+```
+
+##### Ratnapura
+
+```{r}
+seasonal("Ratnapura")
+```
+
+##### Kegalle
+
+```{r}
+seasonal("Kegalle")
+```
+
+##### Kalmune
+
+```{r}
+seasonal("Kalmune")
+```
+
+
+# Dengue Patients Distribution
+
+## Column {.tabset}
+
+### Total Dengue Patients Distribution in 2025
+
+```{r}
+
+```
+
+### Dengue Patients Distribution by Year and District
+
+```{r}
+
+```
+
+### Distribution of Yearly Dengue Patients for last 20 Years
+
+```{r}
+
+```
+
