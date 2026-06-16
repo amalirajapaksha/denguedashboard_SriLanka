@@ -77,7 +77,7 @@ body.dashboard-page {
   background-color: #f8f9fa !important;  /* Soft grey background for unselected tabs */
   border: 1px solid #dee2e6 !important;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 /* Active (Currently Selected) Tab Styling */
@@ -92,9 +92,4 @@ body.dashboard-page {
 .nav-tabs .nav-link:hover:not(.active) {
   background-color: #e9ecef !important;
   color: #00BFFF !important;
-}
-
-/* Inner (nested) tabs */
-.panel-tabset .panel-tabset .nav-link {
-  font-size: 12px;
 }
