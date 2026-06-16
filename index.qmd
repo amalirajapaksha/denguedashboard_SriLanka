@@ -949,9 +949,10 @@ g6 <- ggplot(ann_sf) +
   theme_minimal() +
   coord_sf() +
   theme(
-    axis.text = element_blank(size=24),
-    axis.ticks = element_blank(size=24),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
     panel.grid = element_blank(),
+    plot.title = element_text(size = 26),
     legend.title = element_text(size = 26, face = "bold"),
     legend.text  = element_text(size = 24),
     legend.key.size = unit(1.5, "cm"),
@@ -1010,3 +1011,8 @@ ggplotly(g7, tooltip = "text")
 ```
 
 
+# Global Comparison 
+
+## Column {.tabset}
+
+### 
