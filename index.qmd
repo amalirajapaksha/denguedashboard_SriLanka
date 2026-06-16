@@ -899,7 +899,7 @@ plot_ly(
 #| echo: false
 #| warning: false
 #| message: false
-#| fig-width: 50
+#| fig-width: 80
 #| fig-height: 30
 
 ann_df <- srilanka_weekly_data |>
@@ -953,9 +953,9 @@ g6 <- ggplot(ann_sf) +
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
     plot.title = element_text(size = 26),
-    strip.text = element_text(size = 26, face = "bold"),
-    legend.title = element_text(size = 26, face = "bold"),
-    legend.text  = element_text(size = 24),
+    strip.text = element_text(size = 28, face = "bold"),
+    legend.title = element_text(size = 28, face = "bold"),
+    legend.text  = element_text(size = 26),
     legend.key.size = unit(1.5, "cm"),
     plot.margin = margin(0, 0, 0, 0)
   )
@@ -1016,4 +1016,11 @@ ggplotly(g7, tooltip = "text")
 
 ## Column {.tabset}
 
-### 
+### Global Distribution of the Patient in 2025
+
+### Sri Lanka vs. Top 10 Countries Worldwide (2025)
+
+### Sri Lanka vs. Top 10 Countries in Asia (2025)
+
+
+# About
