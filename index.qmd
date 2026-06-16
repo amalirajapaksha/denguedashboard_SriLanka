@@ -899,8 +899,8 @@ plot_ly(
 #| echo: false
 #| warning: false
 #| message: false
-#| fig-width: 40
-#| fig-height: 20
+#| fig-width: 50
+#| fig-height: 30
 
 ann_df <- srilanka_weekly_data |>
   group_by(year, district) |>        
@@ -953,6 +953,7 @@ g6 <- ggplot(ann_sf) +
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
     plot.title = element_text(size = 26),
+    strip.text = element_text(size = 26, face = "bold"),
     legend.title = element_text(size = 26, face = "bold"),
     legend.text  = element_text(size = 24),
     legend.key.size = unit(1.5, "cm"),
