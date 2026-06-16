@@ -668,6 +668,11 @@ g5
 ### Individual District Analysis
 
 ```{r}
+#| label: Seasonal2
+#| echo: false
+#| warning: false
+#| message: false
+
 seasonal <- function(dis_name) {
 
   dis <- srilanka_weekly_seasonal |>
@@ -863,18 +868,145 @@ seasonal("Kalmune")
 ### Total Dengue Patients Distribution in 2025
 
 ```{r}
+#| label: Dis1
+#| echo: false
+#| warning: false
+#| message: false
+
+srilanka_2025 <- srilanka_weekly_data |>
+  filter(year==2025) |> group_by(district) |>
+  summarise(cases = sum(cases))
+
+srilanka_2025 <- srilanka_2025 |>
+  mutate(parents = "2025")
+
+plot_ly(
+    data = srilanka_2025,
+     type="treemap",
+     labels = ~ district,
+     values = ~ cases,
+    parents = ~ 2025,
+    domain = list(column = 0),
+    textinfo = "label+value+ percent parent"
+  ) 
 
 ```
 
 ### Dengue Patients Distribution by Year and District
 
 ```{r}
+#| label: Dis2
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 40
+#| fig-height: 20
+
+ann_df <- srilanka_weekly_data |>
+  group_by(year, district) |>        
+  summarise(annual_cases = sum(cases), .groups = "drop")  
+data(district)
+ann_df <- ann_df |>
+  mutate(district_clean = toupper(trimws(district)))
+
+dis_sf <- district |>
+  mutate(DISTRICT_clean = toupper(trimws(DISTRICT)))
+
+ann_df <- ann_df |>
+  rowwise() |>
+  mutate(
+    DISTRICT_match = district_sf$DISTRICT_clean[
+      amatch(district_clean, district_sf$DISTRICT_clean, maxDist = 3)
+    ]
+  ) |>
+  ungroup()
+ann_sf <- dis_sf |>
+  left_join(ann_df, by = c("DISTRICT_clean" = "DISTRICT_match"))
+ann_sf <- ann_sf |> filter(year > 2006)
+ann_sf <- ann_sf |>
+  mutate(
+    cases_cat = cut(
+      annual_cases,
+      breaks = c(0, 30, 60, 100, 150, 250, 500, 1000, Inf),
+      labels = c("0-30","31-60", "61-100", "101-150", "151-250",
+                 "251-500", "501-1000", "Above 1000"),
+      include.lowest = TRUE,
+      right = TRUE
+    )
+  )
+
+
+g6 <- ggplot(ann_sf) +
+  geom_sf(aes(fill = cases_cat), color = "grey50", lwd = 0.2) +
+  scale_fill_viridis_d(    
+    option = "magma",
+    direction = -1,
+    na.value = "white",
+    name = "Annual Dengue Cases"
+  ) +
+  facet_wrap(~year, ncol=10
+             ) +
+  theme_minimal() +
+  coord_sf() +
+  theme(
+    axis.text = element_blank(size=24),
+    axis.ticks = element_blank(size=24),
+    panel.grid = element_blank(),
+    legend.title = element_text(size = 26, face = "bold"),
+    legend.text  = element_text(size = 24),
+    legend.key.size = unit(1.5, "cm"),
+    plot.margin = margin(0, 0, 0, 0)
+  )
+
+g6
 
 ```
 
 ### Distribution of Yearly Dengue Patients for last 20 Years
 
 ```{r}
+#| label: Dis3
+#| echo: false
+#| warning: false
+#| message: false
+
+ann_df <- ann_df %>%
+  filter(year > 2006) %>%
+  mutate(
+    district = factor(district, levels = unique(district)),  # keep district order
+    cases_cat = cut(
+      annual_cases,
+      breaks = c(0, 30, 60, 100, 150, 250, 500, 1000, Inf),
+      labels = c("0-30","31-60", "61-100", "101-150", "151-250",
+                 "251-500", "501-1000", "Above 1000"),
+      include.lowest = TRUE
+    )
+  )
+g7 <- ggplot(ann_df) +
+  geom_tile(aes(
+    x = year, 
+    y = district, 
+    fill = cases_cat,
+    text = paste0("District: ", district,
+                  "<br>Year: ", year,
+                  "<br>Annual Cases: ", annual_cases)
+  ), color = "white") +
+  scale_fill_viridis_d(
+    option = "magma",  
+    direction = -1,
+    na.value = "grey90",
+    name = "Annual Dengue Cases"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(
+    breaks = unique(ann_df$year)  
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 8)
+  )
+ggplotly(g7, tooltip = "text")
 
 ```
+
 
