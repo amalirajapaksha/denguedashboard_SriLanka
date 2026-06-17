@@ -31,8 +31,10 @@ library(htmltools)
 library(plotly)
 library(shiny)
 library(RColorBrewer)
+library(readxl)
+library(rnaturalearth)
+library(rnaturalearthdata)
 library(scales) # For percentage formatting
-library(RColorBrewer) # For Dark2 color palette
 library(GGally)
 ```
 
@@ -42,12 +44,17 @@ library(GGally)
 #| warning: false
 data(srilanka_weekly_data)
 
-weekly_2026     <- read_csv(here("data","sri_lanka_weekly_dengue_cases_2026.csv"))
-weekly_2026$year <- as.numeric(weekly_2026$year)
-weekly_2026$week <- as.numeric(weekly_2026$week)
-weekly_2026$start.date <- as.Date(weekly_2026$start.date)
-weekly_2026$district <- as.character(weekly_2026$district)
-weekly_2026$cases <- as.numeric(weekly_2026$cases)
+weekly_2026 <- read_csv(here("data","sri_lanka_weekly_dengue_cases_2026.csv"))
+weekly_2026$year        <- as.numeric(weekly_2026$year)
+weekly_2026$week        <- as.numeric(weekly_2026$week)
+weekly_2026$start.date  <- as.Date(weekly_2026$start.date)
+weekly_2026$district    <- as.character(weekly_2026$district)
+weekly_2026$cases       <- as.numeric(weekly_2026$cases)
+
+Global <- read_excel("data/dengue-global-data.xlsx")
+Global$date      <- as.Date(Global$date )
+Global$cases     <- as.numeric(Global$cases)
+Global$country   <- as.character(Global$country )
 ```
 
 ```{r}
@@ -865,7 +872,7 @@ seasonal("Kalmune")
 
 ## Column {.tabset}
 
-### Total Dengue Patients Distribution in 2025
+### Total Dengue Patients Distribution in 2025 (Last Year)
 
 ```{r}
 #| label: Dis1
@@ -1017,6 +1024,74 @@ ggplotly(g7, tooltip = "text")
 ## Column {.tabset}
 
 ### Global Distribution of the Patient in 2025
+
+```{r}
+
+Global <- Global |>
+  mutate(year = year(date))
+
+global_2025 <- Global |>
+  filter(year == 2025) |>
+  group_by(country) |>
+  summarise(cases = sum(cases)) |>
+  arrange(desc(cases))
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+world2 <- world |>
+  left_join(
+    global_2025,
+    by = c("name" = "country")
+  )
+
+world2 <- world2 |>
+  mutate(
+    cases_cat = cut(
+      cases,
+      breaks = c(0, 500, 5000, 50000, Inf),
+      labels = c(
+        "1-499",
+        "500-4,999",
+        "5,000-49,999",
+        "50,000+"
+      )
+    )
+  )
+
+pal <- colorFactor(
+  palette = c(
+    "#F6EDB3",
+    "#FDB863",
+    "#F46D43",
+    "#D73058"
+  ),
+  domain = world2$cases_cat,
+  na.color = "#EEEEEE"
+)
+
+leaflet(world2) |>
+  addProviderTiles("CartoDB.Positron") |>
+
+  addPolygons(
+    fillColor = ~pal(cases_cat),
+    color = "#cccccc",
+    weight = 0.5,
+    fillOpacity = 0.9,
+
+    popup = ~paste0(
+      "<b>", name, "</b><br>",
+      "Cases: ", cases
+    )
+  ) |>
+
+  addLegend(
+    pal = pal,
+    values = ~cases_cat,
+    title = "Total Cases",
+    position = "bottomright"
+  )
+```
+
 
 ### Sri Lanka vs. Top 10 Countries Worldwide (2025)
 
