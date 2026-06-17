@@ -34,7 +34,7 @@ library(RColorBrewer)
 library(readxl)
 library(rnaturalearth)
 library(rnaturalearthdata)
-library(scales) # For percentage formatting
+library(scales) 
 library(GGally)
 ```
 
@@ -51,21 +51,13 @@ weekly_2026$start.date  <- as.Date(weekly_2026$start.date)
 weekly_2026$district    <- as.character(weekly_2026$district)
 weekly_2026$cases       <- as.numeric(weekly_2026$cases)
 
-Global <- read_excel("data/dengue-global-data.xlsx")
+Global <- read_excel(here("data", "dengue-global-data.xlsx"))
 Global$date      <- as.Date(Global$date )
 Global$cases     <- as.numeric(Global$cases)
 Global$country   <- as.character(Global$country )
 Global$deaths    <- as.numeric(Global$deaths)
 ```
 
-```{r}
-#| label: cleandata
-
-weekly_cases_by_date <- weekly_2026 |>
-  group_by(start.date) |>
-  summarise(weekly_cases = sum(cases, na.rm = TRUE)) |>
-  arrange(start.date)
-```
 
 # Overview
 
@@ -203,7 +195,7 @@ g2 <- ggplotly(
         "District:", DISTRICT_clean
       )
     )) +
-    labs(title = "Map for Dengue Cases in 2026 weighted by population") +
+    labs(title = "Map for Dengue Cases in 2026 Weighted by Population") +
     scale_fill_viridis()+
   theme(axis.text.x = element_blank(), 
         axis.text.y = element_blank(),
@@ -228,6 +220,11 @@ g2
 #| echo: false
 #| message: false
 #| warning: false
+
+weekly_cases_by_date <- weekly_2026 |>
+  group_by(start.date) |>
+  summarise(weekly_cases = sum(cases, na.rm = TRUE)) |>
+  arrange(start.date)
 
 g3 <- ggplotly(ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases,)) +
       geom_line(size = 1, col = "#3b0f70") +           
@@ -981,10 +978,10 @@ g6
 #| warning: false
 #| message: false
 
-ann_df <- ann_df %>%
-  filter(year > 2006) %>%
+ann_df <- ann_df |>
+  filter(year > 2006) |>
   mutate(
-    district = factor(district, levels = unique(district)),  # keep district order
+    district = factor(district, levels = unique(district)),  
     cases_cat = cut(
       annual_cases,
       breaks = c(0, 30, 60, 100, 150, 250, 500, 1000, Inf),
@@ -1231,11 +1228,16 @@ g10 <- plot_ly(
 g10
 ```
 
-### Sri Lanka vs. Top 10 Countries in Asia (2025)
+### Sri Lanka vs. South Eastern Asian Countries-WHO Region (2025)
 
 #### Column {width="50%"}
 
 ```{r}
+#| label: global4
+#| echo: false
+#| warning: false
+#| message: false
+
 global_2025_asia <- Global |>
   filter(year == 2025 & who_region == "SEAR") |>
   group_by(country) |>
@@ -1286,6 +1288,11 @@ g11
 #### Column {width="50%"}
 
 ```{r}
+#| label: global5
+#| echo: false
+#| warning: false
+#| message: false
+
 global_2025_asia_rate <- global_2025_asia |>
   mutate(
     deaths = replace_na(deaths, 0)
@@ -1320,3 +1327,7 @@ g12
 ```
 
 # About
+```{r}
+
+```
+
