@@ -203,7 +203,7 @@ g2 <- ggplotly(
         "District:", DISTRICT_clean
       )
     )) +
-    labs(title = "Map for Dengue Cases in 2026 weighted by population") +
+    labs(title = "Map for Dengue Cases in 2026 Weighted by Population") +
     scale_fill_viridis()+
   theme(axis.text.x = element_blank(), 
         axis.text.y = element_blank(),
@@ -1231,7 +1231,7 @@ g10 <- plot_ly(
 g10
 ```
 
-### Sri Lanka vs. Top 10 Countries in Asia (2025)
+### Sri Lanka vs. South Eastern Asian Countries-WHO Region (2025)
 
 #### Column {width="50%"}
 
