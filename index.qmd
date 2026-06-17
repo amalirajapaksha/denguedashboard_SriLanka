@@ -961,8 +961,8 @@ g6 <- ggplot(ann_sf) +
     panel.grid = element_blank(),
     plot.title = element_text(size = 26),
     strip.text = element_text(size = 28, face = "bold"),
-    legend.title = element_text(size = 28, face = "bold"),
-    legend.text  = element_text(size = 26),
+    legend.title = element_text(size = 30, face = "bold"),
+    legend.text  = element_text(size = 28),
     legend.key.size = unit(1.5, "cm"),
     plot.margin = margin(0, 0, 0, 0)
   )
@@ -1026,6 +1026,10 @@ ggplotly(g7, tooltip = "text")
 ### Global Distribution of the Patient in 2025
 
 ```{r}
+#| label: global1
+#| echo: false
+#| warning: false
+#| message: false
 
 Global <- Global |>
   mutate(year = year(date))
@@ -1072,7 +1076,7 @@ pal <- colorFactor(
   na.color = "#EEEEEE"
 )
 
-m <- leaflet(
+g8 <- leaflet(
   world2,
   options = leafletOptions(
     worldCopyJump = FALSE,
@@ -1103,18 +1107,123 @@ m <- leaflet(
     position = "bottomright"
   )
 
-m <- m |>
+g8 <- g8 |>
   htmlwidgets::onRender("
     function(el,x){
       this.invalidateSize();
     }
   ")
 
-m
+g8
 ```
 
 
 ### Sri Lanka vs. Top 10 Countries Worldwide (2025)
+
+#### Column {width="50%"}
+
+```{r}
+#| label: global2
+#| echo: false
+#| warning: false
+#| message: false
+
+global_top10 <- global_2025 |>
+  arrange(desc(cases)) |>
+  slice_head(n = 10)
+
+sri_lanka <- global_2025 |>
+  filter(country == "Sri Lanka")
+
+global_top10 <- bind_rows(global_top10, sri_lanka) |>
+  distinct(country, .keep_all = TRUE)
+
+global_top10$country <- factor(
+  global_top10$country,
+  levels = rev(global_top10$country)
+)
+
+global_top10 <- global_top10 |> 
+  pivot_longer( cols = c(cases, deaths), names_to = "type", values_to = "count" )
+
+g9 <- plot_ly(
+  global_top10,
+  x = ~count,
+  y = ~country,
+  type = "bar",
+  color = ~type,
+  colors = c(
+    "cases" = "steelblue",
+    "deaths" = "firebrick"
+  )
+) |>
+  layout(
+    title = list(
+      text = "Total Dengue Cases and Deaths by Country (2025)",
+      font = list(size = 18)
+    ),
+    xaxis = list(title = "Count"),
+    yaxis = list(title = list(text = "Country", standoff = 10)),
+    barmode = "stack",
+    legend = list(
+      orientation = "h",
+      xanchor = "center",
+      x = 0.5
+    )
+  )
+
+g9
+```
+
+#### Column {width="50%"}
+
+```{r}
+#| label: global3
+#| echo: false
+#| warning: false
+#| message: false
+
+
+global_top10_rate <- global_2025 |>
+  arrange(desc(cases)) |>
+  slice_head(n = 10)
+
+sri_lanka <- global_2025 |>
+  filter(country == "Sri Lanka")
+
+global_top10_rate <- bind_rows(global_top10_rate, sri_lanka) |>
+  distinct(country, .keep_all = TRUE)
+
+global_top10_rate <- global_top10_rate |>
+  mutate(
+    rate = ifelse(cases == 0, NA, (deaths/cases) * 100)
+  )
+
+global_top10_rate$country <- factor(
+  global_top10_rate$country,
+  levels = rev(global_top10_rate$country)
+)
+
+g10 <- plot_ly(
+  global_top10_rate,
+  x = ~rate,
+  y = ~reorder(country, rate),
+  type = "bar",
+  marker = list(color = "#8B0000"),
+  name = "Death Rate",
+  showlegend = FALSE
+) |>
+  layout(
+    title = list(text = "Dengue Death Rate by Country (2025)", size = 18),
+    xaxis = list(title = 'Death Rate (%)'),
+    yaxis = list(
+     title = list(text = "Country", standoff = 10)
+    )
+  )
+
+g10
+```
+
 
 ### Sri Lanka vs. Top 10 Countries in Asia (2025)
 

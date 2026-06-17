@@ -93,3 +93,10 @@ body.dashboard-page {
   background-color: #e9ecef !important;
   color: #00BFFF !important;
 }
+
+.yellow-box {
+  background-color: #FFF9C4;   /* light yellow */
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  border-radius: 6px;
+}
