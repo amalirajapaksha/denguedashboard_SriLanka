@@ -1033,7 +1033,7 @@ Global <- Global |>
 global_2025 <- Global |>
   filter(year == 2025) |>
   group_by(country) |>
-  summarise(cases = sum(cases)) |>
+  summarise(cases = sum(cases), deaths = sum(deaths)) |>
   arrange(desc(cases))
 
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -1048,22 +1048,25 @@ world2 <- world2 |>
   mutate(
     cases_cat = cut(
       cases,
-      breaks = c(0, 500, 5000, 50000, Inf),
+      breaks = c(-1, 0, 499, 4999, 49999, Inf),
       labels = c(
+        "0",
         "1-499",
         "500-4,999",
         "5,000-49,999",
         "50,000+"
-      )
+      ),
+      include.lowest = TRUE
     )
   )
 
 pal <- colorFactor(
   palette = c(
     "#F6EDB3",
-    "#FDB863",
-    "#F46D43",
-    "#D73058"
+    "#FDC777",
+    "#F89C59",
+    "#F15B4A",
+    "#C91F5C"
   ),
   domain = world2$cases_cat,
   na.color = "#EEEEEE"
