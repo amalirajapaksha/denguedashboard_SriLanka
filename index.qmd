@@ -1069,14 +1069,23 @@ pal <- colorFactor(
   na.color = "#EEEEEE"
 )
 
-leaflet(world2) |>
-  addProviderTiles("CartoDB.Positron") |>
+m <- leaflet(
+  world2,
+  options = leafletOptions(
+    worldCopyJump = FALSE,
+    minZoom = 2
+  )) |>
+  
+  addProviderTiles(
+    "CartoDB.Positron",
+    options = providerTileOptions(noWrap = TRUE)
+  )  |>
 
-  addPolygons(
-    fillColor = ~pal(cases_cat),
-    color = "#cccccc",
-    weight = 0.5,
-    fillOpacity = 0.9,
+     addPolygons(
+       fillColor = ~pal(cases_cat),
+       color = "#cccccc",
+       weight = 0.5,
+       fillOpacity = 0.9,
 
     popup = ~paste0(
       "<b>", name, "</b><br>",
@@ -1090,6 +1099,15 @@ leaflet(world2) |>
     title = "Total Cases",
     position = "bottomright"
   )
+
+m <- m |>
+  htmlwidgets::onRender("
+    function(el,x){
+      this.invalidateSize();
+    }
+  ")
+
+m
 ```
 
 
