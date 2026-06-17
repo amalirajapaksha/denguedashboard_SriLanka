@@ -55,6 +55,7 @@ Global <- read_excel("data/dengue-global-data.xlsx")
 Global$date      <- as.Date(Global$date )
 Global$cases     <- as.numeric(Global$cases)
 Global$country   <- as.character(Global$country )
+Global$deaths    <- as.numeric(Global$deaths)
 ```
 
 ```{r}
@@ -68,8 +69,13 @@ weekly_cases_by_date <- weekly_2026 |>
 
 # Overview
 
+::: {.yellow-box}
+
 **Latest Dengue Surveillance Summary**\
 **Last Updated:** `r format(Sys.Date(), "%A, %B %d, %Y")` \| **Latest local data available for:** May 17, 2026
+
+:::
+
 
 ## Row {height="20%"}
 
@@ -269,7 +275,6 @@ g3
 
 ### Overview of District Trends
 
-
 ```{r}
 #| label: TS2
 #| echo: false
@@ -305,7 +310,6 @@ g4 <- ggplot(srilanka_weekly_df, aes(x = week_start, y = cases)) +
 
 g4
 ```
-
 
 ### Explore Individual District Trends
 
@@ -671,7 +675,6 @@ g5 <- ggplot(srilanka_weekly_seasonal,
 g5
 ```
 
-
 ### Individual District Analysis
 
 ```{r}
@@ -867,7 +870,6 @@ seasonal("Kegalle")
 seasonal("Kalmune")
 ```
 
-
 # Dengue Patients Distribution
 
 ## Column {.tabset}
@@ -1018,8 +1020,7 @@ ggplotly(g7, tooltip = "text")
 
 ```
 
-
-# Global Comparison 
+# Global Comparison
 
 ## Column {.tabset}
 
@@ -1117,7 +1118,6 @@ g8 <- g8 |>
 g8
 ```
 
-
 ### Sri Lanka vs. Top 10 Countries Worldwide (2025)
 
 #### Column {width="50%"}
@@ -1144,7 +1144,11 @@ global_top10$country <- factor(
 )
 
 global_top10 <- global_top10 |> 
-  pivot_longer( cols = c(cases, deaths), names_to = "type", values_to = "count" )
+  pivot_longer( cols = c(cases, deaths), names_to = "type", values_to = "count" ) |>
+  mutate(
+    count = replace_na(count, 0)
+  )
+
 
 g9 <- plot_ly(
   global_top10,
@@ -1160,7 +1164,7 @@ g9 <- plot_ly(
   layout(
     title = list(
       text = "Total Dengue Cases and Deaths by Country (2025)",
-      font = list(size = 18)
+      font = list(size = 16)
     ),
     xaxis = list(title = "Count"),
     yaxis = list(title = list(text = "Country", standoff = 10)),
@@ -1196,7 +1200,10 @@ global_top10_rate <- bind_rows(global_top10_rate, sri_lanka) |>
 
 global_top10_rate <- global_top10_rate |>
   mutate(
-    rate = ifelse(cases == 0, NA, (deaths/cases) * 100)
+    deaths = replace_na(deaths, 0)
+  ) |>
+  mutate(
+    rate = (deaths/cases) * 100
   )
 
 global_top10_rate$country <- factor(
@@ -1214,7 +1221,7 @@ g10 <- plot_ly(
   showlegend = FALSE
 ) |>
   layout(
-    title = list(text = "Dengue Death Rate by Country (2025)", size = 18),
+    title = list(text = "Dengue Death Rate by Country (2025)", size = 16),
     xaxis = list(title = 'Death Rate (%)'),
     yaxis = list(
      title = list(text = "Country", standoff = 10)
@@ -1224,8 +1231,92 @@ g10 <- plot_ly(
 g10
 ```
 
-
 ### Sri Lanka vs. Top 10 Countries in Asia (2025)
 
+#### Column {width="50%"}
+
+```{r}
+global_2025_asia <- Global |>
+  filter(year == 2025 & who_region == "SEAR") |>
+  group_by(country) |>
+  summarise(cases = sum(cases), deaths = sum(deaths)) |>
+  arrange(desc(cases))
+
+global_2025_asia$country <- factor(
+  global_2025_asia$country,
+  levels = rev(global_2025_asia$country)
+)
+
+global_2025_asia_new <- global_2025_asia |> 
+  pivot_longer( cols = c(cases, deaths), names_to = "type", values_to = "count" ) |>
+  mutate(
+    count = replace_na(count, 0)
+  )
+
+g11 <- plot_ly(
+  global_2025_asia_new,
+  x = ~count,
+  y = ~country,
+  type = "bar",
+  color = ~type,
+  colors = c(
+    "cases" = "steelblue",
+    "deaths" = "firebrick"
+  )
+) |>
+  layout(
+    title = list(
+      text = "Total Dengue Cases and Deaths by Country (2025)",
+      font = list(size = 16)
+    ),
+    xaxis = list(title = "Count"),
+    yaxis = list(title = list(text = "Country", standoff = 10)),
+    barmode = "stack",
+    legend = list(
+      orientation = "h",
+      xanchor = "center",
+      x = 0.5
+    )
+  )
+
+g11
+
+```
+
+#### Column {width="50%"}
+
+```{r}
+global_2025_asia_rate <- global_2025_asia |>
+  mutate(
+    deaths = replace_na(deaths, 0)
+  ) |>
+  mutate(
+    rate = (deaths/cases) * 100
+  )
+
+global_2025_asia_rate$country <- factor(
+  global_2025_asia_rate$country,
+  levels = rev(global_2025_asia_rate$country)
+)
+
+g12 <- plot_ly(
+  global_2025_asia_rate,
+  x = ~rate,
+  y = ~reorder(country, rate),
+  type = "bar",
+  marker = list(color = "#8B0000"),
+  name = "Death Rate",
+  showlegend = FALSE
+) |>
+  layout(
+    title = list(text = "Dengue Death Rate by Country (2025)", size = 16),
+    xaxis = list(title = 'Death Rate (%)'),
+    yaxis = list(
+     title = list(text = "Country", standoff = 10)
+    )
+  )
+
+g12
+```
 
 # About
