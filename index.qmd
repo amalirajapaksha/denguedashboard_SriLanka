@@ -1017,6 +1017,31 @@ ggplotly(g7, tooltip = "text")
 
 ```
 
+
+# Climate–Dengue Relationship Analysis
+
+## Column {.tabset}
+
+### Scatterplot Analysis
+
+
+
+### Lag Effects on Dengue Cases
+
+#### Lag 2 weeks scatterplots
+
+#### Lag 4 weeks scatterplots
+
+
+
+### Time Series Analysis
+
+
+### Detrended Cross-Correlation Analysis (DCCA)
+
+
+
+
 # Global Comparison
 
 ## Column {.tabset}
