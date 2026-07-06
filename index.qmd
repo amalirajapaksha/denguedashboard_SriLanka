@@ -56,6 +56,8 @@ Global$date      <- as.Date(Global$date )
 Global$cases     <- as.numeric(Global$cases)
 Global$country   <- as.character(Global$country )
 Global$deaths    <- as.numeric(Global$deaths)
+
+weekly_climate <- read_csv(here("data", "weekly_climate.csv"))
 ```
 
 
@@ -1027,6 +1029,11 @@ ggplotly(g7, tooltip = "text")
 #### Column {width="40%"}
 
 ```{r}
+#| label: scatter1
+#| echo: false
+#| warning: false
+#| message: false
+
 srilanka_weekly_dengue <- srilanka_weekly_data |>
   group_by(year, week) |>
   summarise(
@@ -1059,11 +1066,62 @@ climate_dengue_data <- climate_dengue_data |>
     Cases
   )
 
+g13 <- ggplot(climate_dengue_data,
+       aes(x = Temperature, y = Cases)) +
+  geom_point(color = "steelblue", alpha = 0.7, size = 2) +
+  labs(
+    title = "Temperature vs Weekly Dengue Cases",
+    x = "Average Weekly Temperature (°C)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal(base_size = 14)
+
+g13
 ```
 
 #### Column {width="40%"}
 
+```{r}
+#| label: scatter2
+#| echo: false
+#| warning: false
+#| message: false
+
+g14 <- ggplot(climate_dengue_data,
+       aes(x = Rainfall, y = Cases)) +
+  geom_point(color = "forestgreen", alpha = 0.7, size = 2) +
+  labs(
+    title = "Weekly Rainfall vs Weekly Dengue Cases",
+    x = "Total Weekly Rainfall (mm)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal(base_size = 14)
+
+g14
+```
+
+
 #### Column {width="40%"}
+
+```{r}
+#| label: scatter3
+#| echo: false
+#| warning: false
+#| message: false
+
+g15 <- ggplot(climate_dengue_data,
+       aes(x = Relative_Humidity, y = Cases)) +
+  geom_point(color = "darkorange", alpha = 0.7, size = 2) +
+  labs(
+    title = "Relative Humidity vs Weekly Dengue Cases",
+    x = "Average Weekly Relative Humidity (%)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal(base_size = 14)
+
+g15
+```
+
 
 
 
@@ -1074,7 +1132,149 @@ climate_dengue_data <- climate_dengue_data |>
 
 ##### Lag 2 weeks scatterplots
 
+###### Column {width="40%"}
+```{r}
+#| label: lag2_1
+#| echo: false
+#| warning: false
+#| message: false
+
+climate_dengue_data <- climate_dengue_data |>
+  arrange(Year, Week)
+
+climate_dengue_data <- climate_dengue_data %>%
+  mutate(
+    Temp_lag2 = lag(Temperature, 2),
+    Temp_lag4 = lag(Temperature, 4),
+
+    Rain_lag2 = lag(Rainfall, 2),
+    Rain_lag4 = lag(Rainfall, 4),
+
+    RH_lag2 = lag(Relative_Humidity, 2),
+    RH_lag4 = lag(Relative_Humidity, 4)
+  )
+
+climate_dengue_data_lag <- climate_dengue_data %>%
+  filter(
+    !is.na(Rain_lag4),
+    !is.na(Temp_lag4),
+    !is.na(RH_lag4)
+  )
+
+g16 <- ggplot(climate_dengue_data, aes(x = Temp_lag2, y = Cases)) +
+  geom_point(alpha = 0.7, color = "steelblue") +
+  labs(
+    title = "Lag 2 Weeks: Temperature vs Dengue Cases",
+    x = "Average Temperature (Lag 2 Weeks, °C)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal()
+
+g16
+```
+
+
+###### Column {width="40%"}
+```{r}
+#| label: lag2_2
+#| echo: false
+#| warning: false
+#| message: false
+
+g17 <- ggplot(climate_dengue_data, aes(x = Rain_lag2, y = Cases)) +
+  geom_point(alpha = 0.7, color = "forestgreen") +
+  labs(
+    title = "Lag 2 Weeks: Rainfall vs Dengue Cases",
+    x = "Total Rainfall (Lag 2 Weeks, mm)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal()
+
+g17
+```
+
+
+###### Column {width="40%"}
+```{r}
+#| label: lag2_3
+#| echo: false
+#| warning: false
+#| message: false
+
+g18 <- ggplot(climate_dengue_data, aes(x = RH_lag2, y = Cases)) +
+  geom_point(alpha = 0.7, color = "orange") +
+  labs(
+    title = "Lag 2 Weeks: Relative Humidity vs Dengue Cases",
+    x = "Relative Humidity (Lag 2 Weeks, %)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal()
+
+g18
+```
+
+
 ##### Lag 4 weeks scatterplots
+
+###### Column {width="40%"}
+```{r}
+#| label: lag4_1
+#| echo: false
+#| warning: false
+#| message: false
+
+g19 <- ggplot(climate_dengue_data, aes(x = Temp_lag4, y = Cases)) +
+  geom_point(alpha = 0.7, color = "darkblue") +
+  labs(
+    title = "Lag 4 Weeks: Temperature vs Dengue Cases",
+    x = "Average Temperature (Lag 4 Weeks, °C)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal()
+
+g19
+```
+
+
+###### Column {width="40%"}
+```{r}
+#| label: lag4_2
+#| echo: false
+#| warning: false
+#| message: false
+
+g20 <- ggplot(climate_dengue_data, aes(x = Rain_lag4, y = Cases)) +
+  geom_point(alpha = 0.7, color = "darkgreen") +
+  labs(
+    title = "Lag 4 Weeks: Rainfall vs Dengue Cases",
+    x = "Total Rainfall (Lag 4 Weeks, mm)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal()
+
+g20
+```
+
+
+###### Column {width="40%"}
+```{r}
+#| label: lag4_3
+#| echo: false
+#| warning: false
+#| message: false
+
+g21 <- ggplot(climate_dengue_data, aes(x = RH_lag4, y = Cases)) +
+  geom_point(alpha = 0.7, color = "darkorange") +
+  labs(
+    title = "Lag 4 Weeks: Relative Humidity vs Dengue Cases",
+    x = "Relative Humidity (Lag 4 Weeks, %)",
+    y = "Weekly Dengue Cases"
+  ) +
+  theme_minimal()
+
+g21
+```
+
 
 
 
