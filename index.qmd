@@ -1024,13 +1024,57 @@ ggplotly(g7, tooltip = "text")
 
 ### Scatterplot Analysis
 
+#### Column {width="40%"}
+
+```{r}
+srilanka_weekly_dengue <- srilanka_weekly_data |>
+  group_by(year, week) |>
+  summarise(
+    Cases = sum(cases, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+
+weekly_climate <- weekly_climate |>
+  mutate(
+    Year = year(Start_Date)
+  )
+
+
+climate_dengue_data <- weekly_climate |>
+  left_join(
+    srilanka_weekly_dengue,
+    by = c("Year" = "year", "Week" = "week")
+  )
+
+
+climate_dengue_data <- climate_dengue_data |>
+  select(
+    Year,
+    Week,
+    Start_Date,
+    Temperature,
+    Rainfall,
+    Relative_Humidity,
+    Cases
+  )
+
+```
+
+#### Column {width="40%"}
+
+#### Column {width="40%"}
+
+
 
 
 ### Lag Effects on Dengue Cases
 
-#### Lag 2 weeks scatterplots
+#### Column {.tabset}
 
-#### Lag 4 weeks scatterplots
+##### Lag 2 weeks scatterplots
+
+##### Lag 4 weeks scatterplots
 
 
 
