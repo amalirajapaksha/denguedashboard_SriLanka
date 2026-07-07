@@ -100,3 +100,134 @@ body.dashboard-page {
   padding: 12px;
   border-radius: 6px;
 }
+
+
+
+/* ==========================================================================
+   RESPONSIVE DASHBOARD
+   ========================================================================== */
+
+/* Tablets */
+@media (max-width: 992px) {
+
+  .value-box-title {
+    font-size: 0.9rem !important;
+  }
+
+  .value-box-value {
+    font-size: 2rem !important;
+  }
+
+  .card-header {
+    font-size: 1rem !important;
+  }
+
+  .nav-tabs .nav-link {
+    font-size: 15px !important;
+    padding: 8px 12px !important;
+  }
+
+}
+
+
+/* Phones */
+@media (max-width: 768px) {
+
+  /* Reduce page padding */
+  .quarto-dashboard-content,
+  .quarto-dashboard-container {
+    padding: 8px !important;
+  }
+
+  /* Value boxes */
+  .value-box-title {
+    font-size: 0.85rem !important;
+    text-align: center;
+  }
+
+  .value-box-value {
+    font-size: 1.8rem !important;
+    text-align: center;
+  }
+
+  .value-box-icon i {
+    font-size: 1.3rem !important;
+  }
+
+  /* Dashboard title */
+  .quarto-dashboard-header .title {
+    font-size: 1.2rem !important;
+  }
+
+  /* Cards */
+  .card {
+    margin-bottom: 12px !important;
+  }
+
+  .card-header {
+    font-size: 0.95rem !important;
+    text-align: center;
+  }
+
+  /* Tabs */
+  .nav-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tabs .nav-link {
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+    flex: 0 0 auto;
+  }
+
+  /* Tables */
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Plotly and htmlwidgets */
+  .html-widget,
+  .plotly,
+  .leaflet-container {
+    width: 100% !important;
+  }
+
+}
+
+
+/* Small phones */
+@media (max-width: 480px) {
+
+  .value-box-title {
+    font-size: 0.75rem !important;
+  }
+
+  .value-box-value {
+    font-size: 1.5rem !important;
+  }
+
+  .quarto-dashboard-header .title {
+    font-size: 1rem !important;
+  }
+
+  .card-header {
+    font-size: 0.85rem !important;
+  }
+
+  .nav-tabs .nav-link {
+    font-size: 13px !important;
+    padding: 6px 10px !important;
+  }
+
+}

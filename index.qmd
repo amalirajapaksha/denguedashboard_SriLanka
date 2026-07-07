@@ -3,6 +3,8 @@ title: "Sri Lanka Dengue Dashboard"
 format:
   dashboard:
     css: styles.css
+    orientation: rows
+    mobile: true
 editor: source
 ---
 
@@ -74,7 +76,7 @@ last_week_comparisson$deaths2026 <- as.numeric(last_week_comparisson$deaths2026)
 ::: {.yellow-box}
 
 **Latest Dengue Surveillance Summary**\
-**Last Updated:** `r format(Sys.Date(), "%A, %B %d, %Y")` \| **Latest local data available for:** May 17, 2026
+**Last Updated:** Tuesday, July 07, 2026| **Latest local data available for:** June 28, 2026
 
 :::
 
@@ -248,7 +250,10 @@ g1 <- ggplot(map_data) +
   )
 
 
-ggplotly(g1, tooltip = "text")
+ggplotly(g1, tooltip = "text") |> 
+  layout(
+    autosize = TRUE
+  )
 
 ```
 
@@ -346,7 +351,10 @@ g2 <- ggplot(map_data_death) +
     plot.margin = margin(5, 5, 5, 5)
   )
 
-ggplotly(g2, tooltip = "text")
+ggplotly(g2, tooltip = "text") |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 ### Column {width="40%"}
@@ -396,7 +404,10 @@ g3 <- ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases,)) +
   )
     
 
-ggplotly(g3)
+ggplotly(g3) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 # Last Week Dengue Situation Analysis
@@ -1089,6 +1100,9 @@ seasonal <- function(dis_name) {
         color = "Year"
       ) +
       theme_minimal()
+  ) |> 
+  layout(
+    autosize = TRUE
   )
 }
 ```
@@ -1278,7 +1292,10 @@ plot_ly(
     parents = ~ 2025,
     domain = list(column = 0),
     textinfo = "label+value+ percent parent"
-  ) 
+  ) |> 
+  layout(
+    autosize = TRUE
+  )
 
 ```
 
@@ -1397,7 +1414,10 @@ g7 <- ggplot(ann_df) +
     axis.text.x = element_text(angle = 45, hjust = 1),
     axis.text.y = element_text(size = 8)
   )
-ggplotly(g7, tooltip = "text")
+ggplotly(g7, tooltip = "text") |> 
+  layout(
+    autosize = TRUE
+  )
 
 ```
 
@@ -1484,7 +1504,10 @@ g13 <- ggplot(climate_dengue_data,
     )
   ) 
 
-ggplotly(g13)
+ggplotly(g13) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 #### Column {width="40%"}
@@ -1512,7 +1535,10 @@ g14 <- ggplot(climate_dengue_data,
     )
   ) 
 
-ggplotly(g14)
+ggplotly(g14) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1541,7 +1567,10 @@ g15 <- ggplot(climate_dengue_data,
     )
   ) 
 
-ggplotly(g15)
+ggplotly(g15) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1593,7 +1622,10 @@ g16 <- ggplot(climate_dengue_data_lag, aes(x = Temp_lag2, y = Cases)) +
     )
   ) 
 
-ggplotly(g16)
+ggplotly(g16) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1620,7 +1652,10 @@ g17 <- ggplot(climate_dengue_data_lag, aes(x = Rain_lag2, y = Cases)) +
     )
   ) 
 
-ggplotly(g17)
+ggplotly(g17) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1647,7 +1682,10 @@ g18 <- ggplot(climate_dengue_data_lag, aes(x = RH_lag2, y = Cases)) +
     )
   ) 
 
-ggplotly(g18)
+ggplotly(g18) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1676,7 +1714,10 @@ g19 <- ggplot(climate_dengue_data_lag, aes(x = Temp_lag4, y = Cases)) +
     )
   ) 
 
-ggplotly(g19)
+ggplotly(g19) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1703,7 +1744,10 @@ g20 <- ggplot(climate_dengue_data_lag, aes(x = Rain_lag4, y = Cases)) +
     )
   ) 
 
-ggplotly(g20)
+ggplotly(g20) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1730,7 +1774,10 @@ g21 <- ggplot(climate_dengue_data_lag, aes(x = RH_lag4, y = Cases)) +
     )
   ) 
 
-ggplotly(g21)
+ggplotly(g21) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 
@@ -1782,7 +1829,10 @@ g22 <- ggplot(ts_data, aes(x = Start_Date, y = Value, color = Variable)) +
   ) +
   theme_minimal(base_size = 12) 
 
-ggplotly(g22)
+ggplotly(g22) |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 ### Detrended Cross-Correlation Analysis (DCCA)
@@ -1922,7 +1972,10 @@ theme(
 )
 
 
-ggplotly(g23)
+ggplotly(g23) |> 
+  layout(
+    autosize = TRUE
+  )
 
 ```
 
@@ -2134,7 +2187,10 @@ g10 <- plot_ly(
     )
   )
 
-g10
+g10 |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 ### Sri Lanka vs. South Eastern Asian Countries-WHO Region (2025)
@@ -2190,7 +2246,10 @@ g11 <- plot_ly(
     )
   )
 
-g11
+g11 |> 
+  layout(
+    autosize = TRUE
+  )
 
 ```
 
@@ -2232,7 +2291,10 @@ g12 <- plot_ly(
     )
   )
 
-g12
+g12 |> 
+  layout(
+    autosize = TRUE
+  )
 ```
 
 # About
