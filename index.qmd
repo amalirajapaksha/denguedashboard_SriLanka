@@ -36,6 +36,7 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(scales) 
 library(GGally)
+library(DCCA)
 ```
 
 ```{r}
@@ -58,6 +59,13 @@ Global$country   <- as.character(Global$country )
 Global$deaths    <- as.numeric(Global$deaths)
 
 weekly_climate <- read_csv(here("data", "weekly_climate.csv"))
+
+last_week_comparisson <- read_excel("data/last_week_comparisson.xlsx")
+last_week_comparisson$district <- as.character(last_week_comparisson$district)
+last_week_comparisson$`2025_26th`<- as.numeric(last_week_comparisson$`2025_26th`)
+last_week_comparisson$`2026_26th`<- as.numeric(last_week_comparisson$`2025_26th`)
+last_week_comparisson$deaths2026 <- as.numeric(last_week_comparisson$deaths2026)
+
 ```
 
 
@@ -76,25 +84,41 @@ weekly_climate <- read_csv(here("data", "weekly_climate.csv"))
 ```{r}
 #| content: valuebox
 #| title: "Total Cases in 2026"
-#| color: "#d95f02"
-#| icon: "virus"
+#| color: "#5DADE2"
 
 sum(weekly_2026$cases, na.rm = TRUE)
 ```
 
 ```{r}
 #| content: valuebox
+#| title: "Total Deaths in 2026"
+#| color: "#DC2626"
+
+sum(last_week_comparisson$deaths2026, na.rm = TRUE)
+```
+
+```{r}
+#| content: valuebox
 #| title: "Average Weekly Cases in 2026"
 #| color: "#7570b3"
-#| icon: "calendar-week"
 
-round(sum(weekly_2026$cases, na.rm = TRUE)/20)
+round(sum(weekly_2026$cases, na.rm = TRUE)/26)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Cases in Last Week"
+#| color: "#FFFF00"
+
+weekly_2026 |>
+  filter(week == 26) |>
+  summarise(total_cases = sum(cases, na.rm = TRUE)) |>
+  pull(total_cases)
 ```
 
 ```{r}
 #| content: valuebox
 #| title: "Highest Risk District in 2026"
-#| icon: "geo-alt"
 #| color: "#1b9e77"
 
 weekly_2026 |>
@@ -145,26 +169,43 @@ map_data <- left_join(
 )
 
 
-g1 <- ggplotly(ggplot(map_data) +
-  geom_sf(aes(fill = Count, text = paste('District:', district))) +
-  labs(title = "Map for Total Dengue Cases in 2026") +  
-  scale_fill_viridis() +
-  theme_minimal()+
+
+g1 <- ggplot(map_data) +
+  geom_sf(
+    aes(
+      fill = Count,
+      text = paste0(
+        "District: ", district,
+        "<br>Total Cases: ", Count
+      )
+    ),
+    color = "white",
+    linewidth = 0.2
+  ) +
+  coord_sf(expand = FALSE) +
+  scale_fill_viridis_c(
+    option = "viridis",
+    name = "Cases"
+  ) +
+  labs(
+    title = "Total Dengue Cases in Sri Lanka (2026)"
+  ) +
+  theme_minimal(base_size = 14) +
   theme(
+    axis.title = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
-    plot.margin = margin(0, 0, 0, 0)
-  ))
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    ),
+    plot.margin = margin(5, 5, 5, 5)
+  )
 
-g1 <- g1 |>
-  layout(
-    title = list(
-      text = "Map for Distribution of Total Dengue Cases in 2026",
-      font = list(size = 16)   
-    ))
 
-g1
+ggplotly(g1, tooltip = "text")
 
 ```
 
@@ -188,31 +229,48 @@ filter(!is.na(risk) & risk > 0)
 dorl <- cartogram_dorling(map_data, weight = "population") |>
   st_as_sf()
 
-g2 <- ggplotly(
-  ggplot(dorl) +
-    geom_sf(data = map_data) +
-    geom_sf(aes(
+g2 <- ggplot( ) +
+   geom_sf(
+    data = map_data,
+    fill = "grey95",
+    color = "black",
+    linewidth = 0.3
+  ) +
+  geom_sf(
+    data = dorl,
+    aes(
       fill = Count,
-      text = paste(
-        "District:", DISTRICT_clean
+      text = paste0(
+        "District: ", DISTRICT_clean,
+        "<br>Total Cases: ", Count
       )
-    )) +
-    labs(title = "Map for Dengue Cases in 2026 Weighted by Population") +
-    scale_fill_viridis()+
-  theme(axis.text.x = element_blank(), 
-        axis.text.y = element_blank(),
-        axis.ticks = element_blank(),
-        rect = element_blank())
-)
+    ),
+    color = "white",
+    linewidth = 0.2
+  ) +
+  coord_sf(expand = FALSE) +
+  scale_fill_viridis_c(
+    option = "viridis",
+    name = "Cases"
+  ) +
+  labs(
+    title = "Population-Weighted Distribution of Dengue Cases in Sri Lanka (2026)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    plot.title = element_text(
+      face = "bold",
+       size = 10,
+      hjust = 0.5
+    ),
+    plot.margin = margin(5, 5, 5, 5)
+  )
 
-g2 <- g2 |>
-    layout(
-    title = list(
-       text = "Map for Dengue Cases in 2026 weighted by population",
-       font = list(size = 15)   
-     ))
-
-g2
+ggplotly(g2, tooltip = "text")
 ```
 
 ### Column {width="40%"}
@@ -228,7 +286,9 @@ weekly_cases_by_date <- weekly_2026 |>
   summarise(weekly_cases = sum(cases, na.rm = TRUE)) |>
   arrange(start.date)
 
-g3 <- ggplotly(ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases,)) +
+
+
+g3 <- ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases,)) +
       geom_line(size = 1, col = "#3b0f70") +           
       geom_point(size = 1, col = "#3b0f70") +
       scale_color_viridis_d() +
@@ -240,33 +300,30 @@ g3 <- ggplotly(ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases
         x = "Date (Month-Day)",
         y = "Cases"
       ) +
-      theme_minimal(base_size = 14)
-    )
-
-g3 <- g3 |>
-  layout(
-    title = list(
-      text = "Weekly Dengue Cases in 2026",
-      font = list(size = 16)   
+      theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
     ),
-
-    xaxis = list(
-      title = "Date (Month-Day)",
-      titlefont = list(size = 14),   
-      tickfont = list(size = 10),    
-      tickangle = -60                  
+    axis.title = element_text(size = 13),
+    axis.text.x = element_text(
+      angle = 60,
+      hjust = 1,
+      size = 10
     ),
-
-    yaxis = list(
-      title = "Cases",
-      titlefont = list(size = 14),
-      tickfont = list(size = 12),
-      range = c(0, 2000)
-    )
+    axis.text.y = element_text(size = 11)
+  ) +
+  coord_cartesian(
+    ylim = c(0, 6000)
   )
+    
 
-g3
+ggplotly(g3)
 ```
+# Last Week Dengue Situation Analysis
+
 
 # District-wise Time Series Trends
 
@@ -302,7 +359,7 @@ g4 <- ggplot(srilanka_weekly_df, aes(x = week_start, y = cases)) +
     axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 24, face = "bold"),
     axis.text.y = element_text(size = 24, face = "bold"),
     strip.text = element_text(size = 24, face = "bold"),
-    plot.title = element_text(size = 26, face = "bold", margin = margin(b = 10)),
+    plot.title = element_text(size = 32, face = "bold", margin = margin(b = 10)),
     axis.title.x = element_text(size = 28),
     axis.title.y = element_text(size = 28)
   )
@@ -1020,7 +1077,7 @@ ggplotly(g7, tooltip = "text")
 ```
 
 
-# Climate–Dengue Relationship Analysis
+# Climate-Dengue Relationship Analysis
 
 ## Column {.tabset}
 
@@ -1034,7 +1091,26 @@ ggplotly(g7, tooltip = "text")
 #| warning: false
 #| message: false
 
-srilanka_weekly_dengue <- srilanka_weekly_data |>
+srilanka_weekly_dengue <- srilanka_weekly_data %>%
+  mutate(
+    start.date = mdy(start.date),
+    end.date = mdy(end.date)
+  )
+
+srilanka_weekly_dengue <- srilanka_weekly_dengue |>
+  mutate(
+    Week_start = floor_date(start.date, unit = "week", week_start = 1)  # Monday as start of week
+  ) 
+
+
+srilanka_weekly_dengue <- srilanka_weekly_dengue |>
+  mutate(
+    year = year(Week_start),
+    week = isoweek(Week_start)
+  )
+
+
+srilanka_weekly_dengue <- srilanka_weekly_dengue |>
   group_by(year, week) |>
   summarise(
     Cases = sum(cases, na.rm = TRUE),
@@ -1074,9 +1150,16 @@ g13 <- ggplot(climate_dengue_data,
     x = "Average Weekly Temperature (°C)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g13
+ggplotly(g13)
 ```
 
 #### Column {width="40%"}
@@ -1095,9 +1178,16 @@ g14 <- ggplot(climate_dengue_data,
     x = "Total Weekly Rainfall (mm)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g14
+ggplotly(g14)
 ```
 
 
@@ -1117,32 +1207,33 @@ g15 <- ggplot(climate_dengue_data,
     x = "Average Weekly Relative Humidity (%)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g15
+ggplotly(g15)
 ```
 
 
+### Lag 2 weeks scatterplots
 
+#### Column {width="40%"}
 
-
-### Lag Effects on Dengue Cases
-
-#### Column {.tabset}
-
-##### Lag 2 weeks scatterplots
-
-###### Column {width="40%"}
 ```{r}
 #| label: lag2_1
 #| echo: false
 #| warning: false
 #| message: false
 
-climate_dengue_data <- climate_dengue_data |>
+climate_dengue_data1 <- climate_dengue_data |>
   arrange(Year, Week)
 
-climate_dengue_data <- climate_dengue_data %>%
+climate_dengue_data1 <- climate_dengue_data1 %>%
   mutate(
     Temp_lag2 = lag(Temperature, 2),
     Temp_lag4 = lag(Temperature, 4),
@@ -1154,125 +1245,167 @@ climate_dengue_data <- climate_dengue_data %>%
     RH_lag4 = lag(Relative_Humidity, 4)
   )
 
-climate_dengue_data_lag <- climate_dengue_data %>%
+climate_dengue_data_lag <- climate_dengue_data1 %>%
   filter(
     !is.na(Rain_lag4),
     !is.na(Temp_lag4),
     !is.na(RH_lag4)
   )
 
-g16 <- ggplot(climate_dengue_data, aes(x = Temp_lag2, y = Cases)) +
+g16 <- ggplot(climate_dengue_data_lag, aes(x = Temp_lag2, y = Cases)) +
   geom_point(alpha = 0.7, color = "steelblue") +
   labs(
     title = "Lag 2 Weeks: Temperature vs Dengue Cases",
     x = "Average Temperature (Lag 2 Weeks, °C)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g16
+ggplotly(g16)
 ```
 
 
-###### Column {width="40%"}
+#### Column {width="40%"}
 ```{r}
 #| label: lag2_2
 #| echo: false
 #| warning: false
 #| message: false
 
-g17 <- ggplot(climate_dengue_data, aes(x = Rain_lag2, y = Cases)) +
+g17 <- ggplot(climate_dengue_data_lag, aes(x = Rain_lag2, y = Cases)) +
   geom_point(alpha = 0.7, color = "forestgreen") +
   labs(
     title = "Lag 2 Weeks: Rainfall vs Dengue Cases",
     x = "Total Rainfall (Lag 2 Weeks, mm)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g17
+ggplotly(g17)
 ```
 
 
-###### Column {width="40%"}
+#### Column {width="40%"}
 ```{r}
 #| label: lag2_3
 #| echo: false
 #| warning: false
 #| message: false
 
-g18 <- ggplot(climate_dengue_data, aes(x = RH_lag2, y = Cases)) +
+g18 <- ggplot(climate_dengue_data_lag, aes(x = RH_lag2, y = Cases)) +
   geom_point(alpha = 0.7, color = "orange") +
   labs(
     title = "Lag 2 Weeks: Relative Humidity vs Dengue Cases",
     x = "Relative Humidity (Lag 2 Weeks, %)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g18
+ggplotly(g18)
 ```
 
 
-##### Lag 4 weeks scatterplots
+### Lag 4 weeks scatterplots
 
-###### Column {width="40%"}
+#### Column {width="40%"}
 ```{r}
 #| label: lag4_1
 #| echo: false
 #| warning: false
 #| message: false
 
-g19 <- ggplot(climate_dengue_data, aes(x = Temp_lag4, y = Cases)) +
+g19 <- ggplot(climate_dengue_data_lag, aes(x = Temp_lag4, y = Cases)) +
   geom_point(alpha = 0.7, color = "darkblue") +
   labs(
     title = "Lag 4 Weeks: Temperature vs Dengue Cases",
     x = "Average Temperature (Lag 4 Weeks, °C)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g19
+ggplotly(g19)
 ```
 
 
-###### Column {width="40%"}
+#### Column {width="40%"}
 ```{r}
 #| label: lag4_2
 #| echo: false
 #| warning: false
 #| message: false
 
-g20 <- ggplot(climate_dengue_data, aes(x = Rain_lag4, y = Cases)) +
+g20 <- ggplot(climate_dengue_data_lag, aes(x = Rain_lag4, y = Cases)) +
   geom_point(alpha = 0.7, color = "darkgreen") +
   labs(
     title = "Lag 4 Weeks: Rainfall vs Dengue Cases",
     x = "Total Rainfall (Lag 4 Weeks, mm)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g20
+ggplotly(g20)
 ```
 
 
-###### Column {width="40%"}
+#### Column {width="40%"}
 ```{r}
 #| label: lag4_3
 #| echo: false
 #| warning: false
 #| message: false
 
-g21 <- ggplot(climate_dengue_data, aes(x = RH_lag4, y = Cases)) +
+g21 <- ggplot(climate_dengue_data_lag, aes(x = RH_lag4, y = Cases)) +
   geom_point(alpha = 0.7, color = "darkorange") +
   labs(
     title = "Lag 4 Weeks: Relative Humidity vs Dengue Cases",
     x = "Relative Humidity (Lag 4 Weeks, %)",
     y = "Weekly Dengue Cases"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    )
+  ) 
 
-g21
+ggplotly(g21)
 ```
 
 
@@ -1280,11 +1413,193 @@ g21
 
 ### Time Series Analysis
 
+```{r}
+#| label: corr_ts
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 40
+#| fig-height: 20
+
+ts_data <- climate_dengue_data %>%
+  select(Start_Date, Temperature, Rainfall, Relative_Humidity, Cases) %>%
+  pivot_longer(
+    cols = -Start_Date,
+    names_to = "Variable",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Variable = factor(Variable,
+                      levels = c("Temperature",
+                                 "Rainfall",
+                                 "Relative_Humidity",
+                                 "Cases"),
+     labels = c("Temperature",
+                "Rainfall",
+                "Humidity (%)",
+                "Cases"))
+  )
+
+
+g22 <- ggplot(ts_data, aes(x = Start_Date, y = Value, color = Variable)) +
+  geom_line(linewidth = 0.5) +
+  facet_grid(Variable ~ ., scales = "free_y") +
+  scale_color_manual(values = c(
+    "Temperature" = "steelblue",
+    "Rainfall" = "forestgreen",
+    "Humidity (%)" = "orange",
+    "Cases" = "red"
+  )) +
+  labs(
+    title = "Time Series of Climate Variables and Dengue Cases",
+    x = "Time (Week Start Date)",
+    y = "Value",
+  ) +
+  theme_minimal(base_size = 12) 
+
+ggplotly(g22)
+```
 
 ### Detrended Cross-Correlation Analysis (DCCA)
 
+```{r}
+#| label: DCCA
+#| echo: false
+#| warning: false
+#| message: false
 
 
+temp <- climate_dengue_data$Temperature
+rain <- climate_dengue_data$Rainfall
+humidity <- climate_dengue_data$Relative_Humidity
+dengue <- climate_dengue_data$Cases
+
+
+calculate_dcca <- function(x, y, scales){
+
+  df <- data.frame(x = x, y = y)
+
+  df <- df[
+    complete.cases(df) &
+      is.finite(df$x) &
+      is.finite(df$y),
+  ]
+
+  x <- df$x
+  y <- df$y
+
+  rho_values <- numeric(length(scales))
+
+  for(i in seq_along(scales)){
+
+    rho_values[i] <- rhodcca(
+      y1 = x,
+      y2 = y,
+      m = scales[i],
+      nu = 0,
+      overlap = TRUE
+    )$rhodcca
+
+  }
+
+  data.frame(
+    Scale = scales,
+    rho_DCCA = rho_values
+  )
+}
+
+
+
+scales <- seq(4, 52, by = 2)
+
+
+dcca_temp <- calculate_dcca(
+  temp,
+  dengue,
+  scales
+)
+
+dcca_temp$Variable <- "Temperature"
+
+
+
+dcca_rain <- calculate_dcca(
+  rain,
+  dengue,
+  scales
+)
+
+dcca_rain$Variable <- "Rainfall"
+
+
+
+dcca_hum <- calculate_dcca(
+  humidity,
+  dengue,
+  scales
+)
+
+dcca_hum$Variable <- "Humidity"
+
+
+
+dcca_results <- rbind(
+  dcca_temp,
+  dcca_rain,
+  dcca_hum
+)
+
+
+
+g23 <- ggplot(
+  dcca_results,
+  aes(
+    x = Scale,
+    y = rho_DCCA,
+    color = Variable
+  )
+) +
+
+geom_point(size = 2) +
+
+geom_line(linewidth = 0.8) +
+
+geom_hline(
+  yintercept = 0,
+  linetype = "dashed",
+  linewidth = 0.6
+) +
+
+scale_color_manual(
+  values = c(
+    "Temperature" = "steelblue",
+    "Rainfall" = "forestgreen",
+    "Humidity" = "orange"
+  )
+) +
+
+scale_x_continuous(
+  breaks = seq(4,52,by=4)
+) +
+
+labs(
+  title = "Detrended Cross-Correlation between Climate Variables and Dengue Cases",
+  subtitle = "Scale-dependent ρDCCA analysis (4–52 weeks)",
+  x = "Time Scale (Weeks)",
+  y = expression(rho[DCCA]),
+  color = "Climate Variable"
+) +
+
+theme_minimal(base_size = 12) +
+
+theme(
+  legend.position = "bottom"
+)
+
+
+ggplotly(g23)
+
+```
 
 # Global Comparison
 
