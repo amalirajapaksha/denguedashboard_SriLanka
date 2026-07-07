@@ -63,7 +63,7 @@ weekly_climate <- read_csv(here("data", "weekly_climate.csv"))
 last_week_comparisson <- read_excel("data/last_week_comparisson.xlsx")
 last_week_comparisson$district <- as.character(last_week_comparisson$district)
 last_week_comparisson$`2025_26th`<- as.numeric(last_week_comparisson$`2025_26th`)
-last_week_comparisson$`2026_26th`<- as.numeric(last_week_comparisson$`2025_26th`)
+last_week_comparisson$`2026_26th`<- as.numeric(last_week_comparisson$`2026_26th`)
 last_week_comparisson$deaths2026 <- as.numeric(last_week_comparisson$deaths2026)
 
 ```
@@ -166,27 +166,70 @@ map_data <- left_join(
   district_sf,
   district_df2,
   by = c("DISTRICT_clean" = "DISTRICT_match")
-)
+) |>
+drop_na(Count)  
 
+
+map_data <- map_data |>
+  mutate(
+    Cases_Category = case_when(
+      Count >= 0 & Count <= 30       ~ "0-30",
+      Count >= 31 & Count <= 60      ~ "31-60",
+      Count >= 61 & Count <= 100     ~ "61-100",
+      Count >= 101 & Count <= 150    ~ "101-150",
+      Count >= 151 & Count <= 250    ~ "151-250",
+      Count >= 251 & Count <= 500    ~ "251-500",
+      Count >= 501 & Count <= 1000   ~ "501-1000",
+      Count >= 1001 & Count <= 3000  ~ "1001-3000",
+      Count > 3000                   ~ "Above 3000",
+      TRUE                           ~ NA_character_
+    )
+  )
+
+map_data$Cases_Category <- factor(
+  map_data$Cases_Category,
+  levels = c(
+    "0-30",
+    "31-60",
+    "61-100",
+    "101-150",
+    "151-250",
+    "251-500",
+    "501-1000",
+    "1001-3000",
+    "Above 3000"
+  )
+)
 
 
 g1 <- ggplot(map_data) +
   geom_sf(
-    aes(
-      fill = Count,
-      text = paste0(
-        "District: ", district,
-        "<br>Total Cases: ", Count
-      )
-    ),
+  aes(
+    fill = Cases_Category,
+    text = paste0(
+      "District: ", DISTRICT,
+      "<br>Total Cases: ", Count
+    )
+  ),
     color = "white",
     linewidth = 0.2
   ) +
   coord_sf(expand = FALSE) +
-  scale_fill_viridis_c(
-    option = "viridis",
-    name = "Cases"
-  ) +
+  scale_fill_manual(
+    values = c(
+      "0-30"       = viridis(9)[9],
+      "31-60"      = viridis(9)[8],
+      "61-100"     = viridis(9)[7],
+      "101-150"    = viridis(9)[6],
+      "151-250"    = viridis(9)[5],
+      "251-500"    = viridis(9)[4],
+      "501-1000"   = viridis(9)[3],
+      "1001-3000"  = viridis(9)[2],
+      "Above 3000" = viridis(9)[1]
+    ),
+    name = "Cases",
+    drop = FALSE
+) +
   labs(
     title = "Total Dengue Cases in Sri Lanka (2026)"
   ) +
@@ -218,43 +261,76 @@ ggplotly(g1, tooltip = "text")
 #| warning: false
 
 
-map_data <- map_data |>
-mutate(
-risk = Count / population
+district_df_death <- last_week_comparisson |>
+  select(district, deaths2026)
+
+data(district)
+district_df_death <- district_df_death |>
+  mutate(district_clean = toupper(trimws(district)))
+
+district_sf_death <- district |>
+  mutate(DISTRICT_clean = toupper(trimws(DISTRICT)))
+
+district_df_death <- district_df_death |>
+  rowwise() |>
+  mutate(
+    DISTRICT_match = district_sf_death$DISTRICT_clean[
+      amatch(district_clean, district_sf_death$DISTRICT_clean, maxDist = 3)
+    ]
+  ) |>
+  ungroup()
+
+district_df2_death <- as.data.frame(district_df_death)
+
+map_data_death <- left_join(
+  district_sf_death,
+  district_df2_death,
+  by = c("DISTRICT_clean" = "DISTRICT_match")
+) |>
+drop_na(deaths2026)  
+
+
+map_data_death <- map_data_death |>
+  mutate(
+    death_cat = case_when(
+      deaths2026 == 0               ~ "0",
+      deaths2026 >= 1 & deaths2026 <= 2 ~ "1–2",
+      deaths2026 >= 3 & deaths2026 <= 5 ~ "3–5",
+      deaths2026 >= 6 & deaths2026 <= 9 ~ "6–9",
+      deaths2026 >= 10              ~ "10+",
+      TRUE                           ~ NA_character_
+    )
+  )
+
+
+map_data_death$death_cat <- factor(
+  map_data_death$death_cat,
+  levels = c("0", "1–2", "3–5", "6–9", "10+")
 )
 
-map_data <- map_data |>
-filter(!is.na(risk) & risk > 0)
 
-dorl <- cartogram_dorling(map_data, weight = "population") |>
-  st_as_sf()
-
-g2 <- ggplot( ) +
-   geom_sf(
-    data = map_data,
-    fill = "grey95",
-    color = "black",
-    linewidth = 0.3
-  ) +
-  geom_sf(
-    data = dorl,
-    aes(
-      fill = Count,
-      text = paste0(
-        "District: ", DISTRICT_clean,
-        "<br>Total Cases: ", Count
-      )
-    ),
-    color = "white",
-    linewidth = 0.2
-  ) +
+g2 <- ggplot(map_data_death) +
+  geom_sf(aes(fill = death_cat,
+              text = paste0(
+        "District: ", district,
+        "<br>Cumulative Deaths: ", deaths2026
+      )),
+          colour = "black",
+          linewidth = 0.4) +
   coord_sf(expand = FALSE) +
-  scale_fill_viridis_c(
-    option = "viridis",
-    name = "Cases"
-  ) +
+  scale_fill_manual(
+  values = c(
+    "0"   = "#D9D9D9",  
+    "1–2" = "#F8B4B4",  
+    "3–5" = "#F46D6D",  
+    "6–9" = "#D73027",  
+    "10+" = "#7F0000"   
+  ),
+  name = "Deaths",
+  drop = FALSE
+) +
   labs(
-    title = "Population-Weighted Distribution of Dengue Cases in Sri Lanka (2026)"
+    title = "Cumulative Deaths in Sri Lanka (2026)"
   ) +
   theme_minimal(base_size = 14) +
   theme(
@@ -264,7 +340,7 @@ g2 <- ggplot( ) +
     panel.grid = element_blank(),
     plot.title = element_text(
       face = "bold",
-       size = 10,
+      size = 10,
       hjust = 0.5
     ),
     plot.margin = margin(5, 5, 5, 5)
@@ -322,8 +398,257 @@ g3 <- ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases,)) +
 
 ggplotly(g3)
 ```
+
 # Last Week Dengue Situation Analysis
 
+## Row {height="100%"}
+
+### Column {width="50%"}
+
+```{r}
+district_df_2026 <- last_week_comparisson |>
+  select(district, `2026_26th`)
+
+data(district)
+district_df_2026 <- district_df_2026 |>
+  mutate(district_clean = toupper(trimws(district)))
+
+district_sf_2026 <- district |>
+  mutate(DISTRICT_clean = toupper(trimws(DISTRICT)))
+
+district_df_2026 <- district_df_2026 |>
+  rowwise() |>
+  mutate(
+    DISTRICT_match = district_sf_2026$DISTRICT_clean[
+      amatch(district_clean, district_sf_2026$DISTRICT_clean, maxDist = 3)
+    ]
+  ) |>
+  ungroup()
+
+district_df2_2026 <- as.data.frame(district_df_2026)
+
+map_data_2026 <- left_join(
+  district_sf_2026,
+  district_df2_2026,
+  by = c("DISTRICT_clean" = "DISTRICT_match")
+) |>
+drop_na(`2026_26th`)  
+
+
+map_data_2026 <- map_data_2026 |>
+  mutate(
+    case2026_cat = case_when(
+      
+      `2026_26th` == 0                         ~ "0",
+      
+      `2026_26th` >= 1 & `2026_26th` <= 10     ~ "1-10",
+      
+      `2026_26th` >= 11 & `2026_26th` <= 30    ~ "11-30",
+      
+      `2026_26th` >= 31 & `2026_26th` <= 60    ~ "31-60",
+      
+      `2026_26th` >= 61 & `2026_26th` <= 100   ~ "61-100",
+      
+      `2026_26th` >= 101 & `2026_26th` <= 150  ~ "101-150",
+      
+      `2026_26th` >= 151 & `2026_26th` <= 250  ~ "151-250",
+      
+      `2026_26th` >= 250                       ~ "250+",
+      
+      TRUE ~ NA_character_
+    )
+  )
+
+
+
+map_data_2026$case2026_cat <- factor(
+  map_data_2026$case2026_cat,
+  levels = c(
+    "0",
+    "1-10",
+    "11-30",
+    "31-60",
+    "61-100",
+    "101-150",
+    "151-250",
+    "250+"
+  )
+)
+
+
+p1 <- ggplot(map_data_2026) +
+  geom_sf(aes(fill = case2026_cat),
+          colour = "black",
+          linewidth = 0.4) +
+  geom_sf_text(
+    aes(label = `2026_26th`),
+    size = 3.25,
+    color = "black",
+    fontface = "bold"
+  ) +
+  coord_sf(expand = FALSE) +
+ scale_fill_manual(
+    values = c(
+      "0"       = alpha("#BDBDBD", 0.5),
+      "1-10"    = alpha("#FFF3E0", 0.5),
+      "11-30"   = alpha("#FFE0B2", 0.5),
+      "31-60"   = alpha("#FFCC80", 0.5),
+      "61-100"  = alpha("#FFB74D", 0.5),
+      "101-150" = alpha("#FB8C00", 0.5),
+      "151-250" = alpha("#EF6C00", 0.5),
+      "250+"    = alpha("#B33A00", 0.5)
+    ),
+    name = "Cases",
+    drop = FALSE
+  ) +
+  labs(
+    title = "Cases in Last Week (26th Week)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    ),
+    plot.margin = margin(5, 5, 5, 5)
+  )
+
+p1
+```
+### Column {width="50%"}
+
+```{r}
+district_df_diff <- last_week_comparisson |>
+  mutate(
+    diff = `2026_26th` - `2025_26th`
+  ) |>
+  select(district, diff)
+
+data(district)
+district_df_diff <- district_df_diff |>
+  mutate(district_clean = toupper(trimws(district)))
+
+district_sf_diff <- district |>
+  mutate(DISTRICT_clean = toupper(trimws(DISTRICT)))
+
+district_df_diff <- district_df_diff |>
+  rowwise() |>
+  mutate(
+    DISTRICT_match = district_sf_diff$DISTRICT_clean[
+      amatch(district_clean, district_sf_diff$DISTRICT_clean, maxDist = 3)
+    ]
+  ) |>
+  ungroup()
+
+district_df2_diff <- as.data.frame(district_df_diff)
+
+map_data_diff <- left_join(
+  district_sf_diff,
+  district_df2_diff,
+  by = c("DISTRICT_clean" = "DISTRICT_match")
+) |>
+drop_na(diff)
+
+map_data_diff <- map_data_diff |>
+  mutate(
+    casediff_cat = case_when(
+      
+      diff == 0                         ~ "0",
+      
+      diff >= 1 & diff <= 10     ~ "1-10",
+      
+      diff >= 11 & diff <= 30    ~ "11-30",
+      
+      diff >= 31 & diff <= 60    ~ "31-60",
+      
+     diff >= 61 & diff <= 100   ~ "61-100",
+      
+      diff >= 101 & diff <= 150  ~ "101-150",
+      
+      diff >= 151 & diff <= 250  ~ "151-250",
+      
+      diff >= 250                       ~ "250+",
+      
+      TRUE ~ NA_character_
+    )
+  )
+
+
+
+map_data_diff$casediff_cat <- factor(
+  map_data_diff$casediff_cat,
+  levels = c(
+    "0",
+    "1-10",
+    "11-30",
+    "31-60",
+    "61-100",
+    "101-150",
+    "151-250",
+    "250+"
+  )
+)
+
+map_data_diff <- map_data_diff |>
+  mutate(
+    diff_label = ifelse(
+      diff > 0,
+      paste0("+", diff),
+      as.character(diff)
+    )
+  )
+
+p2 <- ggplot(map_data_diff) +
+  geom_sf(aes(fill = casediff_cat),
+          colour = "black",
+          linewidth = 0.4) +
+  geom_sf_text(
+    aes(label = diff_label),
+    size = 3.25,
+    color = "black",
+    fontface = "bold"
+  ) +
+  coord_sf(expand = FALSE) +
+  scale_fill_manual(
+    values = c(
+      "0"       = alpha("#BDBDBD", 0.5),
+      "1-10"    = alpha("#FFF3E0", 0.5),
+      "11-30"   = alpha("#FFE0B2", 0.5),
+      "31-60"   = alpha("#FFCC80", 0.5),
+      "61-100"  = alpha("#FFB74D", 0.5),
+      "101-150" = alpha("#FB8C00", 0.5),
+      "151-250" = alpha("#EF6C00", 0.5),
+      "250+"    = alpha("#B33A00", 0.5)
+    ),
+    name = "Cases",
+    drop = FALSE
+  ) +
+  labs(
+    title = "Additional Cases in 26th Week Compared to that Week in 2025"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.key = element_rect(),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    ),
+    plot.margin = margin(5, 5, 5, 5)
+  )  
+    
+  p2
+
+```
 
 # District-wise Time Series Trends
 
