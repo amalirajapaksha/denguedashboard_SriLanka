@@ -42,17 +42,32 @@ data2026$cases <- as.numeric(data2026$cases)
 
 
 # Remove first 7 rows
-data2026 <- data2026[-(1:26), ]
+data2026 <- data2026[-(1:19), ]
 
 head(data2026)
 nrow(data2026)
 
-data2026$cases[175:200] <- c(347,219,78,47,27,13,109,15,40,24,9,1,5,2,25,12,16,16,25,26,15,17,20,13,101,47,18)
-data2026$cases[203:226] <- c(68,56,16,6,98,38,83,36,1,2,5,2,49,12,13,30,30,27,4,20,16,93,35,25)
+data2026$cases[182:207] <- c(347,219,78,47,27,13,109,15,40,24,9,1,5,2,25,12,16,16,25,26,15,17,20,13,101,47,18)
+data2026$cases[210:233] <- c(68,56,16,6,98,38,83,36,1,2,5,2,49,12,13,30,30,27,4,20,16,93,35,25)
+
+
+# Combine week 21-26 data
+
+latest_2026_data <- read_excel(here("raw-data","2026_21-26_weekly_data.xlsx"))
+
+latest_2026_data$year <- as.numeric(latest_2026_data$year)
+latest_2026_data$week <- as.numeric(latest_2026_data$week)
+latest_2026_data$start.date <- as.Date(latest_2026_data$start.date)
+latest_2026_data$end.date <- as.Date(latest_2026_data$end.date)
+latest_2026_data$district <- as.character(latest_2026_data$district)
+latest_2026_data$cases <- as.numeric(latest_2026_data$cases)
+
+
+combined_2026_data <- rbind(data2026, latest_2026_data)
 
 # Save as CSV
 readr::write_csv(
-  data2026,
+  combined_2026_data,
   here("data","sri_lanka_weekly_dengue_cases_2026.csv")
 )
 
