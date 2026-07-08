@@ -231,3 +231,50 @@ body.dashboard-page {
   }
 
 }
+
+
+/* Default desktop */
+.html-widget, .plotly, .dygraph {
+  width: 100% !important;
+  height: 500px !important;
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+  .html-widget, .plotly, .dygraph {
+    height: 380px !important;
+  }
+  .plotly .xtitle, .plotly .ytitle {
+    font-size: 13px !important;
+  }
+  .plotly .legend, .dygraph-legend {
+    font-size: 12px !important;
+  }
+}
+
+/* Phones */
+@media (max-width: 768px) {
+  .html-widget, .plotly, .dygraph {
+    height: 280px !important;
+  }
+  .plotly .xtitle, .plotly .ytitle {
+    font-size: 11px !important;
+  }
+  .plotly .legend, .dygraph-legend {
+    font-size: 10px !important;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .html-widget, .plotly, .dygraph {
+    height: 220px !important;
+  }
+  .plotly .xtitle, .plotly .ytitle {
+    font-size: 9px !important;
+  }
+  .plotly .legend, .dygraph-legend {
+    font-size: 9px !important;
+  }
+}
+
