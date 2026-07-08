@@ -39,6 +39,7 @@ library(rnaturalearthdata)
 library(scales) 
 library(GGally)
 library(DCCA)
+library(patchwork)
 ```
 
 ```{r}
@@ -53,6 +54,13 @@ weekly_2026$week        <- as.numeric(weekly_2026$week)
 weekly_2026$start.date  <- as.Date(weekly_2026$start.date)
 weekly_2026$district    <- as.character(weekly_2026$district)
 weekly_2026$cases       <- as.numeric(weekly_2026$cases)
+weekly_2026 <- weekly_2026 |>
+  mutate(
+    district = if_else(district == "Kalmune", "Ampara", district)
+  ) |>
+  group_by(year, week, start.date, end.date, district) |>
+  summarise(cases = sum(cases), .groups = "drop")
+
 
 Global <- read_excel(here("data", "dengue-global-data.xlsx"))
 Global$date      <- as.Date(Global$date )
@@ -67,19 +75,25 @@ last_week_comparisson$district <- as.character(last_week_comparisson$district)
 last_week_comparisson$`2025_26th`<- as.numeric(last_week_comparisson$`2025_26th`)
 last_week_comparisson$`2026_26th`<- as.numeric(last_week_comparisson$`2026_26th`)
 last_week_comparisson$deaths2026 <- as.numeric(last_week_comparisson$deaths2026)
-
+last_week_comparisson <- last_week_comparisson |>
+  mutate(
+    district = if_else(district == "Kalmune", "Ampara", district)
+  ) |>
+  group_by(district) |>
+  summarise(
+    `2025_26th` = sum(`2025_26th`, na.rm = TRUE),
+    `2026_26th` = sum(`2026_26th`, na.rm = TRUE),
+    deaths2026 = sum(deaths2026, na.rm = TRUE),
+    .groups = "drop"
+  )
 ```
-
 
 # Overview
 
-::: {.yellow-box}
-
+::: yellow-box
 **Latest Dengue Surveillance Summary**\
-**Last Updated:** Tuesday, July 07, 2026| **Latest local data available for:** June 28, 2026
-
+**Last Updated:** Tuesday, July 07, 2026\| **Latest local data available for:** June 28, 2026
 :::
-
 
 ## Row {height="20%"}
 
@@ -140,7 +154,6 @@ weekly_2026 |>
 #| echo: false
 #| message: false
 #| warning: false
-
 
 district_df <- weekly_2026 |>
   group_by(district) |>       
@@ -365,6 +378,25 @@ ggplotly(g2, tooltip = "text") |>
 #| message: false
 #| warning: false
 
+
+srilanka_weekly_dengue_past <- srilanka_weekly_data |>
+  mutate(
+    start.date = mdy(start.date),
+    end.date = mdy(end.date)
+  )
+
+srilanka_weekly_dengue_past <- srilanka_weekly_dengue_past |>
+  mutate(
+    Week_start = floor_date(start.date, unit = "week", week_start = 1)  # Monday as start of week
+  ) 
+
+weekly_past_cases_by_date <- srilanka_weekly_dengue_past |>
+  group_by(start.date) |>
+  summarise(weekly_cases = sum(cases, na.rm = TRUE)) |>
+  arrange(start.date)
+
+
+
 weekly_cases_by_date <- weekly_2026 |>
   group_by(start.date) |>
   summarise(weekly_cases = sum(cases, na.rm = TRUE)) |>
@@ -372,42 +404,61 @@ weekly_cases_by_date <- weekly_2026 |>
 
 
 
-g3 <- ggplot(weekly_cases_by_date, aes(x = start.date, y = weekly_cases,)) +
-      geom_line(size = 1, col = "#3b0f70") +           
-      geom_point(size = 1, col = "#3b0f70") +
-      scale_color_viridis_d() +
-      scale_x_date(
-    date_labels = "%b %d",   
-    date_breaks = "2 weeks") +
-      labs(
-        title = "Weekly Dengue Cases in 2026",
-        x = "Date (Month-Day)",
-        y = "Cases"
-      ) +
-      theme_minimal(base_size = 14) +
-  theme(
-    plot.title = element_text(
-      face = "bold",
-      size = 10,
-      hjust = 0.5
-    ),
-    axis.title = element_text(size = 13),
-    axis.text.x = element_text(
-      angle = 60,
-      hjust = 1,
-      size = 10
-    ),
-    axis.text.y = element_text(size = 11)
-  ) +
-  coord_cartesian(
-    ylim = c(0, 6000)
-  )
-    
+past_data <- weekly_past_cases_by_date %>%
+  mutate(
+    year = year(start.date),
+    week = isoweek(start.date)   
+  ) %>%
+  filter(year %in% c(2024, 2025))
 
-ggplotly(g3) |> 
-  layout(
-    autosize = TRUE
+
+data_2026 <- weekly_cases_by_date %>%
+  mutate(
+    year = 2026,
+    week = isoweek(start.date)
   )
+
+
+weekly_all <- bind_rows(past_data, data_2026) %>%
+  mutate(year = factor(year))
+
+weekly_all$week[103:128] <- 1:26
+
+
+
+g3 <- ggplot(
+  weekly_all,
+  aes(
+    x = week,
+    y = weekly_cases,
+    color = year,
+    group = year
+  )
+) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 0.7) +
+  scale_color_viridis_d(option = "D", end = 0.9, name = "Year") +
+  scale_x_continuous(
+    breaks = seq(1, 52, by = 2),
+    limits = c(1, 52)
+  ) +
+  labs(
+    title = "Weekly Dengue Cases (2024–2026)",
+    x = "Week Number",
+    y = "Cases"
+  ) +
+  coord_cartesian(ylim = c(0, 6000)) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 10, hjust = 0.5),
+    axis.title = element_text(size = 13),
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 7),
+    axis.text.y = element_text(size = 11),
+    legend.title = element_text(face = "bold")
+  )
+
+ggplotly(g3) |>
+  layout(autosize = TRUE)
 ```
 
 # Last Week Dengue Situation Analysis
@@ -417,6 +468,13 @@ ggplotly(g3) |>
 ### Column {width="50%"}
 
 ```{r}
+#| label: Lweeek1
+#| echo: false
+#| message: false
+#| warning: false
+
+
+
 district_df_2026 <- last_week_comparisson |>
   select(district, `2026_26th`)
 
@@ -531,9 +589,17 @@ p1 <- ggplot(map_data_2026) +
 
 p1
 ```
+
 ### Column {width="50%"}
 
 ```{r}
+#| label: Lweeek2
+#| echo: false
+#| message: false
+#| warning: false
+
+
+
 district_df_diff <- last_week_comparisson |>
   mutate(
     diff = `2026_26th` - `2025_26th`
@@ -1421,7 +1487,6 @@ ggplotly(g7, tooltip = "text") |>
 
 ```
 
-
 # Climate-Dengue Relationship Analysis
 
 ## Column {.tabset}
@@ -1436,7 +1501,7 @@ ggplotly(g7, tooltip = "text") |>
 #| warning: false
 #| message: false
 
-srilanka_weekly_dengue <- srilanka_weekly_data %>%
+srilanka_weekly_dengue <- srilanka_weekly_data |>
   mutate(
     start.date = mdy(start.date),
     end.date = mdy(end.date)
@@ -1502,9 +1567,9 @@ g13 <- ggplot(climate_dengue_data,
       size = 10,
       hjust = 0.5
     )
-  ) 
+  )
 
-ggplotly(g13) |> 
+ggplotly(g13)|> 
   layout(
     autosize = TRUE
   )
@@ -1541,7 +1606,6 @@ ggplotly(g14) |>
   )
 ```
 
-
 #### Column {width="40%"}
 
 ```{r}
@@ -1572,7 +1636,6 @@ ggplotly(g15) |>
     autosize = TRUE
   )
 ```
-
 
 ### Lag 2 weeks scatterplots
 
@@ -1628,8 +1691,8 @@ ggplotly(g16) |>
   )
 ```
 
-
 #### Column {width="40%"}
+
 ```{r}
 #| label: lag2_2
 #| echo: false
@@ -1658,8 +1721,8 @@ ggplotly(g17) |>
   )
 ```
 
-
 #### Column {width="40%"}
+
 ```{r}
 #| label: lag2_3
 #| echo: false
@@ -1688,10 +1751,10 @@ ggplotly(g18) |>
   )
 ```
 
-
 ### Lag 4 weeks scatterplots
 
 #### Column {width="40%"}
+
 ```{r}
 #| label: lag4_1
 #| echo: false
@@ -1720,8 +1783,8 @@ ggplotly(g19) |>
   )
 ```
 
-
 #### Column {width="40%"}
+
 ```{r}
 #| label: lag4_2
 #| echo: false
@@ -1750,8 +1813,8 @@ ggplotly(g20) |>
   )
 ```
 
-
 #### Column {width="40%"}
+
 ```{r}
 #| label: lag4_3
 #| echo: false
@@ -1779,9 +1842,6 @@ ggplotly(g21) |>
     autosize = TRUE
   )
 ```
-
-
-
 
 ### Time Series Analysis
 
@@ -2298,7 +2358,35 @@ g12 |>
 ```
 
 # About
-```{r}
 
-```
+This dashboard provides an interactive overview of the dengue situation in Sri Lanka using the latest available surveillance data. Built with R using the Quarto Dashboard framework, it presents recent dengue trends, district-level analyses, historical patterns, comparisons with the global dengue situation, and explores the relationship between dengue transmission and key climate variables. The dashboard offers valuable insights for monitoring, understanding, and supporting evidence-based decision-making on dengue dynamics in Sri Lanka.
 
+**Created by**
+
+-   [Y.M. Amali P. Rajapaksha](https://amalipriyanwada.netlify.app/), Department of Statistics, University of Sri Jayewardenepura. 
+
+**Code** 
+
+- The code behind the dashboard is available on [GitHub](https://github.com/amalirajapaksha/denguedashboard_SriLanka).
+
+**Data**
+
+-   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at https://github.com/thiyangt/denguedatahub. Data for 2026 are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and the Weekly Dengue Updates published by the National Dengue Control Unit, Ministry of Health, Sri Lanka. These data are extracted through web scraping using the `convert_slwer_to_tidy()` function available in the `denguedatahub` package.
+
+-   Sri Lanka maps are created using the `ceylon` package in R available here https://github.com/thiyangt/ceylon.
+
+-   The global data used in this dashboard are obtained from the World Health Organization's [Global Dengue Surveillance Dashboard](https://worldhealthorg.shinyapps.io/dengue_global/).
+
+-   The climate data used in this study were downloaded from the [NASA POWER Data Access Viewer](https://power.larc.nasa.gov/data-access-viewer/), provided by the National Aeronautics and Space Administration (NASA).
+
+**Remarks**
+
+-   Although the Ampara district has been divided into two Regional Directorates of Health Services (RDHS) areas, Ampara and Kalmunai, both Kalmunai and Ampara RDHS counts are combined and represented under Ampara district in the Sri Lanka country map.
+
+-   Countries with the highest number of confirmed cases were selected as top 10 countries in Global Comparison tab.
+
+**References**
+
+-   **Visualization techniques:** Referenced the [Sri Lanka COVID-19 Dashboard](https://thiyangt.github.io/coviddashboard/#about) to explore and adapt visualization techniques that can be applied for disease surveillance and epidemiological analysis, including interactive summaries and temporal trend visualization.
+
+-   **Climate–dengue correlation analysis methods:** Reviewed statistical approaches from the papers *"Analysis of the correlation between climatic variables and Dengue cases in the city of Alagoinhas/BA"* by Marcos Batista Figueredo et al. and *"Correlation between incidence of dengue and climatic factors in the Philippines: An ecological study"* by Ann Kashmer D. Yu et al. to identify suitable methods for analysing relationships between climatic variables and dengue incidence.

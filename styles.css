@@ -233,11 +233,6 @@ body.dashboard-page {
 }
 
 
-/* Default desktop */
-.html-widget, .plotly, .dygraph {
-  width: 100% !important;
-  height: 500px !important;
-}
 
 /* Tablets */
 @media (max-width: 992px) {
