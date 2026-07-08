@@ -2,7 +2,12 @@
 title: "Report of Sri Lanka Dengue Dashboard"
 author: Y.M. Amali P. Rajapaksha
 date: 2026-07-08
-format: pdf
+format:
+  pdf:
+    keep-tex: true
+    
+header-includes:
+  - \usepackage{float}
 ---
 
 This dashboard provides an interactive overview of the dengue situation in Sri Lanka using the latest available surveillance data. Built with R using the Quarto Dashboard framework, it presents recent dengue trends, district-level analyses, historical patterns, comparisons with the global dengue situation, and explores the relationship between dengue transmission and key climate variables. The dashboard offers valuable insights for monitoring, understanding, and supporting evidence-based decision-making on dengue dynamics in Sri Lanka.
@@ -30,3 +35,130 @@ Index No : AS2022642
 -   All raw data files are available in the `raw-data` directory.
 
 -   All R scripts used for data preprocessing are available in the `pre_processing` directory.
+
+## Methodology
+
+Here, I have used several visualization techniques for different purposes.
+
+## Results
+
+The dashboard is organized into 8 navigation tabs, including Overview, Last Week Dengue Situation Analysis, District-wise Time Series Trends, District-wise Seasonal Plots, Dengue Patients Distribution, Climate-Dengue Relationship Analysis, Global Comparison, and About. Each tab contains interactive visualizations and analytical outputs. Table 2 provides a description of each tab and summarizes its key content.
+
+### Tab 1
+
+```{r}
+#| label: fig-tab1
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 1 (Overview)"
+#| echo: false
+
+knitr::include_graphics("images/tab1.png")
+```
+
+## Tab 2
+
+```{r}
+#| label: fig-tab2
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 2 (Last Week Dengue Situation Analysis)"
+#| echo: false
+
+knitr::include_graphics("images/tab2.png")
+```
+
+## Tab 3
+
+```{r}
+#| label: fig-tab3
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 3 (District-wise Time Series Trends)"
+#| fig-subcap:
+#| - ""
+#| - ""
+#| layout-ncol: 2
+#| out-width: "98%"
+#| echo: false
+
+knitr::include_graphics(c(
+  "images/tab3.a.png",
+  "images/tab3.b.png"
+))
+```
+
+## Tab 4
+
+```{r}
+#| label: fig-tab4
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 4 (District-wise Seasonal Plots)"
+#| fig-subcap:
+#| - ""
+#| - ""
+#| layout-ncol: 2
+#| out-width: "98%"
+#| echo: false
+
+knitr::include_graphics(c(
+  "images/tab4.a.png",
+  "images/tab4.b.png"
+))
+```
+
+## Tab 5
+
+```{r}
+#| label: fig-tab5
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 5 (Dengue Patients Distribution)"
+#| fig-subcap:
+#| - ""
+#| - ""
+#| - ""
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| out-width: "98%"
+#| echo: false
+
+knitr::include_graphics(c(
+  "images/tab5.a.png",
+  "images/tab5.b.png",
+  "images/tab5.c.png"
+))
+```
+
+## Tab 6
+
+```{r}
+#| label: fig-tab6
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 6 (Climate-Dengue Relationship Analysis)"
+#| fig-subcap:
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| layout-ncol: 2
+#| layout-nrow: 3
+#| out-width: "98%"
+#| echo: false
+
+knitr::include_graphics(c(
+  "images/tab6.a.png",
+  "images/tab6.b.png",
+  "images/tab6.c.png",
+  "images/tab6.d.png",
+  "images/tab6.e.png"
+))
+```
+
+## Tab 8
+
+```{r}
+#| label: fig-tab8
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 8 (About)"
+#| echo: false
+
+knitr::include_graphics("images/tab8.png")
+```

@@ -1,0 +1,471 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\KOMAoption{captions}{tableheading}
+\usepackage{float}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Report of Sri Lanka Dengue Dashboard},
+  pdfauthor={Y.M. Amali P. Rajapaksha},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Report of Sri Lanka Dengue Dashboard}
+\author{Y.M. Amali P. Rajapaksha}
+\date{2026-07-08}
+\begin{document}
+\maketitle
+
+
+This dashboard provides an interactive overview of the dengue situation
+in Sri Lanka using the latest available surveillance data. Built with R
+using the Quarto Dashboard framework, it presents recent dengue trends,
+district-level analyses, historical patterns, comparisons with the
+global dengue situation, and explores the relationship between dengue
+transmission and key climate variables. The dashboard offers valuable
+insights for monitoring, understanding, and supporting evidence-based
+decision-making on dengue dynamics in Sri Lanka.
+
+\subsection{Dashboard Link}\label{dashboard-link}
+
+\url{https://amalirajapaksha.github.io/denguedashboard_SriLanka/}
+
+\subsection{Created By}\label{created-by}
+
+Name : Y.M.A.P. Rajapaksha
+
+Index No : AS2022642
+
+\subsection{Data}\label{data}
+
+\begin{itemize}
+\item
+  All local data up to December 2025 used in this dashboard are obtained
+  from the weekly epidemiological reports published by the Epidemiology
+  Unit, Ministry of Health, Sri Lanka, through the
+  \texttt{denguedatahub} R package, available at
+  https://github.com/thiyangt/denguedatahub.
+\item
+  Data for 2026 are obtained from the weekly epidemiological reports
+  published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and
+  the Weekly Dengue Updates published by the National Dengue Control
+  Unit, Ministry of Health, Sri Lanka. These data are extracted through
+  web scraping using the \texttt{convert\_slwer\_to\_tidy()} function
+  available in the \texttt{denguedatahub} package. The processed
+  datasets are available in
+  \texttt{data/sri\_lanka\_weekly\_dengue\_cases\_2026.csv} and
+  \texttt{data/last\_week\_comparisson.xlsx}.
+\item
+  The global data used in this dashboard are obtained from the World
+  Health Organization's
+  \href{https://worldhealthorg.shinyapps.io/dengue_global/}{Global
+  Dengue Surveillance Dashboard}. The corresponding dataset is available
+  in \texttt{data/dengue-global-data.xlsx}.
+\item
+  The climate data used in this study were downloaded from the
+  \href{https://power.larc.nasa.gov/data-access-viewer/}{NASA POWER Data
+  Access Viewer}, provided by the National Aeronautics and Space
+  Administration (NASA). The processed weekly climate dataset is
+  available in \texttt{data/weekly\_climate.csv}.
+\item
+  All raw data files are available in the \texttt{raw-data} directory.
+\item
+  All R scripts used for data preprocessing are available in the
+  \texttt{pre\_processing} directory.
+\end{itemize}
+
+\subsection{Methodology}\label{methodology}
+
+Here, I have used several visualization techniques for different
+purposes.
+
+\subsection{Results}\label{results}
+
+The dashboard is organized into 8 navigation tabs, including Overview,
+Last Week Dengue Situation Analysis, District-wise Time Series Trends,
+District-wise Seasonal Plots, Dengue Patients Distribution,
+Climate-Dengue Relationship Analysis, Global Comparison, and About. Each
+tab contains interactive visualizations and analytical outputs. Table 2
+provides a description of each tab and summarizes its key content.
+
+\subsubsection{Tab 1}\label{tab-1}
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=5.08in,height=\textheight,keepaspectratio]{images/tab1.png}
+
+}
+
+\caption{\label{fig-tab1}Screenshot of Tab 1 (Overview)}
+
+\end{figure}%
+
+\subsection{Tab 2}\label{tab-2}
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=5.08in,height=\textheight,keepaspectratio]{images/tab2.png}
+
+}
+
+\caption{\label{fig-tab2}Screenshot of Tab 2 (Last Week Dengue Situation
+Analysis)}
+
+\end{figure}%
+
+\subsection{Tab 3}\label{tab-3}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab3.a.png}
+
+}
+
+\subcaption{\label{fig-tab3-1}}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab3.b.png}
+
+}
+
+\subcaption{\label{fig-tab3-2}}
+
+\end{minipage}%
+
+\caption{\label{fig-tab3}Screenshot of Tab 3 (District-wise Time Series
+Trends)}
+
+\end{figure}%
+
+\subsection{Tab 4}\label{tab-4}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab4.a.png}
+
+}
+
+\subcaption{\label{fig-tab4-1}}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab4.b.png}
+
+}
+
+\subcaption{\label{fig-tab4-2}}
+
+\end{minipage}%
+
+\caption{\label{fig-tab4}Screenshot of Tab 4 (District-wise Seasonal
+Plots)}
+
+\end{figure}%
+
+\subsection{Tab 5}\label{tab-5}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab5.a.png}
+
+}
+
+\subcaption{\label{fig-tab5-1}}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab5.b.png}
+
+}
+
+\subcaption{\label{fig-tab5-2}}
+
+\end{minipage}%
+\newline
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab5.c.png}
+
+}
+
+\subcaption{\label{fig-tab5-3}}
+
+\end{minipage}%
+
+\caption{\label{fig-tab5}Screenshot of Tab 5 (Dengue Patients
+Distribution)}
+
+\end{figure}%
+
+\subsection{Tab 6}\label{tab-6}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab6.a.png}
+
+}
+
+\subcaption{\label{fig-tab6-1}}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab6.b.png}
+
+}
+
+\subcaption{\label{fig-tab6-2}}
+
+\end{minipage}%
+\newline
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab6.c.png}
+
+}
+
+\subcaption{\label{fig-tab6-3}}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab6.d.png}
+
+}
+
+\subcaption{\label{fig-tab6-4}}
+
+\end{minipage}%
+\newline
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab6.e.png}
+
+}
+
+\subcaption{\label{fig-tab6-5}}
+
+\end{minipage}%
+
+\caption{\label{fig-tab6}Screenshot of Tab 6 (Climate-Dengue
+Relationship Analysis)}
+
+\end{figure}%
+
+\subsection{Tab 8}\label{tab-8}
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=5.1in,height=\textheight,keepaspectratio]{images/tab8.png}
+
+}
+
+\caption{\label{fig-tab8}Screenshot of Tab 8 (About)}
+
+\end{figure}%
+
+
+
+
+\end{document}
