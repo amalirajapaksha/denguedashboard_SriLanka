@@ -1,6 +1,32 @@
 ---
 title: "Report of Sri Lanka Dengue Dashboard"
+author: Y.M. Amali P. Rajapaksha
+date: 2026-07-08
 format: pdf
 ---
 
-## 
+This dashboard provides an interactive overview of the dengue situation in Sri Lanka using the latest available surveillance data. Built with R using the Quarto Dashboard framework, it presents recent dengue trends, district-level analyses, historical patterns, comparisons with the global dengue situation, and explores the relationship between dengue transmission and key climate variables. The dashboard offers valuable insights for monitoring, understanding, and supporting evidence-based decision-making on dengue dynamics in Sri Lanka.
+
+## Dashboard Link
+
+<https://amalirajapaksha.github.io/denguedashboard_SriLanka/>
+
+## Created By
+
+Name : Y.M.A.P. Rajapaksha
+
+Index No : AS2022642
+
+## Data
+
+-   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at https://github.com/thiyangt/denguedatahub.
+
+-   Data for 2026 are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and the Weekly Dengue Updates published by the National Dengue Control Unit, Ministry of Health, Sri Lanka. These data are extracted through web scraping using the `convert_slwer_to_tidy()` function available in the `denguedatahub` package. The processed datasets are available in `data/sri_lanka_weekly_dengue_cases_2026.csv` and `data/last_week_comparisson.xlsx`.
+
+-   The global data used in this dashboard are obtained from the World Health Organization's [Global Dengue Surveillance Dashboard](https://worldhealthorg.shinyapps.io/dengue_global/). The corresponding dataset is available in `data/dengue-global-data.xlsx`.
+
+-   The climate data used in this study were downloaded from the [NASA POWER Data Access Viewer](https://power.larc.nasa.gov/data-access-viewer/), provided by the National Aeronautics and Space Administration (NASA). The processed weekly climate dataset is available in `data/weekly_climate.csv`.
+
+-   All raw data files are available in the `raw-data` directory.
+
+-   All R scripts used for data preprocessing are available in the `pre_processing` directory.
