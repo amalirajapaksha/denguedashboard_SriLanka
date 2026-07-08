@@ -206,6 +206,28 @@ body.dashboard-page {
 }
 
 
+@media (max-width: 1366px) {
+
+  .value-box-title {
+    font-size: 0.9rem !important;
+  }
+
+  .value-box-value {
+    font-size: 2rem !important;
+  }
+
+  .card-header {
+    font-size: 1rem !important;
+  }
+
+  .nav-tabs .nav-link {
+    font-size: 15px !important;
+    padding: 8px 14px !important;
+  }
+
+}
+
+
 /* Small phones */
 @media (max-width: 480px) {
 
