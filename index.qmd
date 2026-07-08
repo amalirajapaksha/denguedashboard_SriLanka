@@ -1491,15 +1491,15 @@ ggplotly(g7, tooltip = "text") |>
 
 ## Column {.tabset}
 
-### Scatterplot Analysis
-
-#### Column {width="40%"}
+### Time Series Analysis
 
 ```{r}
-#| label: scatter1
+#| label: corr_ts
 #| echo: false
 #| warning: false
 #| message: false
+#| fig-width: 40
+#| fig-height: 20
 
 srilanka_weekly_dengue <- srilanka_weekly_data |>
   mutate(
@@ -1551,6 +1551,58 @@ climate_dengue_data <- climate_dengue_data |>
     Relative_Humidity,
     Cases
   )
+
+ts_data <- climate_dengue_data |>
+  select(Start_Date, Temperature, Rainfall, Relative_Humidity, Cases) |>
+  pivot_longer(
+    cols = -Start_Date,
+    names_to = "Variable",
+    values_to = "Value"
+  ) |>
+  mutate(
+    Variable = factor(Variable,
+                      levels = c("Temperature",
+                                 "Rainfall",
+                                 "Relative_Humidity",
+                                 "Cases"),
+     labels = c("Temperature",
+                "Rainfall",
+                "Humidity (%)",
+                "Cases"))
+  )
+
+
+g22 <- ggplot(ts_data, aes(x = Start_Date, y = Value, color = Variable)) +
+  geom_line(linewidth = 0.5) +
+  facet_grid(Variable ~ ., scales = "free_y") +
+  scale_color_manual(values = c(
+    "Temperature" = "steelblue",
+    "Rainfall" = "forestgreen",
+    "Humidity (%)" = "orange",
+    "Cases" = "red"
+  )) +
+  labs(
+    title = "Time Series of Climate Variables and Dengue Cases",
+    x = "Time (Week Start Date)",
+    y = "Value",
+  ) +
+  theme_minimal(base_size = 12) 
+
+ggplotly(g22) |> 
+  layout(
+    autosize = TRUE
+  )
+```
+
+### Scatterplot Analysis
+
+#### Column {width="40%"}
+
+```{r}
+#| label: scatter1
+#| echo: false
+#| warning: false
+#| message: false
 
 g13 <- ggplot(climate_dengue_data,
        aes(x = Temperature, y = Cases)) +
@@ -1838,58 +1890,6 @@ g21 <- ggplot(climate_dengue_data_lag, aes(x = RH_lag4, y = Cases)) +
   ) 
 
 ggplotly(g21) |> 
-  layout(
-    autosize = TRUE
-  )
-```
-
-### Time Series Analysis
-
-```{r}
-#| label: corr_ts
-#| echo: false
-#| warning: false
-#| message: false
-#| fig-width: 40
-#| fig-height: 20
-
-ts_data <- climate_dengue_data %>%
-  select(Start_Date, Temperature, Rainfall, Relative_Humidity, Cases) %>%
-  pivot_longer(
-    cols = -Start_Date,
-    names_to = "Variable",
-    values_to = "Value"
-  ) %>%
-  mutate(
-    Variable = factor(Variable,
-                      levels = c("Temperature",
-                                 "Rainfall",
-                                 "Relative_Humidity",
-                                 "Cases"),
-     labels = c("Temperature",
-                "Rainfall",
-                "Humidity (%)",
-                "Cases"))
-  )
-
-
-g22 <- ggplot(ts_data, aes(x = Start_Date, y = Value, color = Variable)) +
-  geom_line(linewidth = 0.5) +
-  facet_grid(Variable ~ ., scales = "free_y") +
-  scale_color_manual(values = c(
-    "Temperature" = "steelblue",
-    "Rainfall" = "forestgreen",
-    "Humidity (%)" = "orange",
-    "Cases" = "red"
-  )) +
-  labs(
-    title = "Time Series of Climate Variables and Dengue Cases",
-    x = "Time (Week Start Date)",
-    y = "Value",
-  ) +
-  theme_minimal(base_size = 12) 
-
-ggplotly(g22) |> 
   layout(
     autosize = TRUE
   )
@@ -2363,15 +2363,17 @@ This dashboard provides an interactive overview of the dengue situation in Sri L
 
 **Created by**
 
--   [Y.M. Amali P. Rajapaksha](https://amalipriyanwada.netlify.app/), Department of Statistics, University of Sri Jayewardenepura. 
+-   [Y.M. Amali P. Rajapaksha](https://amalipriyanwada.netlify.app/), Department of Statistics, University of Sri Jayewardenepura.
 
-**Code** 
+**Code**
 
-- The code behind the dashboard is available on [GitHub](https://github.com/amalirajapaksha/denguedashboard_SriLanka).
+-   The code behind the dashboard is available on [GitHub](https://github.com/amalirajapaksha/denguedashboard_SriLanka).
 
 **Data**
 
--   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at https://github.com/thiyangt/denguedatahub. Data for 2026 are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and the Weekly Dengue Updates published by the National Dengue Control Unit, Ministry of Health, Sri Lanka. These data are extracted through web scraping using the `convert_slwer_to_tidy()` function available in the `denguedatahub` package.
+-   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at https://github.com/thiyangt/denguedatahub.
+
+-   Data for 2026 are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and the Weekly Dengue Updates published by the National Dengue Control Unit, Ministry of Health, Sri Lanka. These data are extracted through web scraping using the `convert_slwer_to_tidy()` function available in the `denguedatahub` package.
 
 -   Sri Lanka maps are created using the `ceylon` package in R available here https://github.com/thiyangt/ceylon.
 
