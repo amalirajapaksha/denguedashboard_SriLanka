@@ -102,7 +102,11 @@ last_week_comparisson <- last_week_comparisson |>
 #| title: "Total Cases in 2026"
 #| color: "#5DADE2"
 
-sum(weekly_2026$cases, na.rm = TRUE)
+format(
+  sum(weekly_2026$cases, na.rm = TRUE),
+  big.mark = ",",
+  scientific = FALSE
+)
 ```
 
 ```{r}
@@ -110,7 +114,11 @@ sum(weekly_2026$cases, na.rm = TRUE)
 #| title: "Total Deaths in 2026"
 #| color: "#DC2626"
 
-sum(last_week_comparisson$deaths2026, na.rm = TRUE)
+format(
+  sum(last_week_comparisson$deaths2026, na.rm = TRUE),
+  big.mark = ",",
+  scientific = FALSE
+)
 ```
 
 ```{r}
@@ -118,7 +126,12 @@ sum(last_week_comparisson$deaths2026, na.rm = TRUE)
 #| title: "Average Weekly Cases in 2026"
 #| color: "#7570b3"
 
-round(sum(weekly_2026$cases, na.rm = TRUE)/26)
+format(
+  round(sum(weekly_2026$cases, na.rm = TRUE)/26),
+  big.mark = ",",
+  scientific = FALSE
+)
+
 ```
 
 ```{r}
@@ -126,10 +139,14 @@ round(sum(weekly_2026$cases, na.rm = TRUE)/26)
 #| title: "Cases in Last Week"
 #| color: "#FFFF00"
 
-weekly_2026 |>
+format(
+  weekly_2026 |>
   filter(week == 26) |>
   summarise(total_cases = sum(cases, na.rm = TRUE)) |>
-  pull(total_cases)
+  pull(total_cases),
+  big.mark = ",",
+  scientific = FALSE
+)
 ```
 
 ```{r}
@@ -137,12 +154,13 @@ weekly_2026 |>
 #| title: "Highest Risk District in 2026"
 #| color: "#1b9e77"
 
-weekly_2026 |>
+  weekly_2026 |>
   group_by(district) |>
   summarise(total_cases = sum(cases, na.rm = TRUE)) |>
   arrange(desc(total_cases)) |>
   slice(1) |>
   pull(district)
+
 ```
 
 ## Row {height="65%"}
