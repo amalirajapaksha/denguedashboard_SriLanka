@@ -2412,6 +2412,6 @@ This dashboard provides an interactive overview of the dengue situation in Sri L
 
 **References**
 
--   **Visualization techniques:** Referenced the [Sri Lanka COVID-19 Dashboard](https://thiyangt.github.io/coviddashboard/#about) to explore and adapt visualization techniques that can be applied for disease surveillance and epidemiological analysis, including interactive summaries and temporal trend visualization.
+-   **Visualization techniques:** Referenced the [Sri Lanka COVID-19 Dashboard](https://thiyangt.github.io/coviddashboard/) to explore and adapt visualization techniques that can be applied for disease surveillance and epidemiological analysis, including interactive summaries and temporal trend visualization.
 
 -   **Climate–dengue correlation analysis methods:** Reviewed statistical approaches from the papers *"Analysis of the correlation between climatic variables and Dengue cases in the city of Alagoinhas/BA"* by Marcos Batista Figueredo et al. and *"Correlation between incidence of dengue and climatic factors in the Philippines: An ecological study"* by Ann Kashmer D. Yu et al. to identify suitable methods for analysing relationships between climatic variables and dengue incidence.
