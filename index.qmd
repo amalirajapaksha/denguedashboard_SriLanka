@@ -68,6 +68,7 @@ Global$cases     <- as.numeric(Global$cases)
 Global$country   <- as.character(Global$country )
 Global$deaths    <- as.numeric(Global$deaths)
 
+
 weekly_climate <- read_csv(here("data", "weekly_climate.csv"))
 
 last_week_comparisson <- read_excel("data/last_week_comparisson.xlsx")
@@ -2175,6 +2176,8 @@ sri_lanka <- global_2025 |>
 global_top10 <- bind_rows(global_top10, sri_lanka) |>
   distinct(country, .keep_all = TRUE)
 
+global_top10$deaths[7] <- 79
+
 global_top10$country <- factor(
   global_top10$country,
   levels = rev(global_top10$country)
@@ -2234,6 +2237,8 @@ sri_lanka <- global_2025 |>
 
 global_top10_rate <- bind_rows(global_top10_rate, sri_lanka) |>
   distinct(country, .keep_all = TRUE)
+
+global_top10_rate$deaths[7] <- 79
 
 global_top10_rate <- global_top10_rate |>
   mutate(
