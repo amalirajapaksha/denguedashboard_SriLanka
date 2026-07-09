@@ -48,21 +48,36 @@ Here, several visualization techniques have been used for different purposes. To
 \hline
 \textbf{Information Presented} & \textbf{Visualization Technique(s)} \\
 \hline
-Description of the first methodology. This column is wider and automatically wraps text. & Line Plot \\
+Key Information about the Present Dengue Situation in Sri Lanka & KPIs \\
 \hline
-Description of the second methodology. & Choropleth Map \\
+Distribution of Total Dengue Cases in Sri Lanka in 2026 & Choropleth Map \\
 \hline
-Description of the third methodology. & Scatter Plot \\
+Cumulative Dengue Deaths in Sri Lanka in 2026 & Choropleth Map \\
+\hline
+Anomalous Dengue Behaviour in the Current Period Compared with the Previous Two Years in Sri Lanka & Time Series Plot \\
+\hline
+Last Week's Dengue Situation Analysis & Choropleth Maps \\
+\hline
+District-wise Weekly Dengue Case Analysis Over Time until 2025 & Faceted and Individual Time Series Plots, Faceted and Individual Seasonal Plots \\
+\hline
+Distribution of Dengue Patients by District and Year until 2025 & Tree map, Faceted Choropleth Map, Heatmap \\
+\hline
+Relationship Between Climatic Variables and Dengue Cases & Multi-panel Time Series Plot, Scatterplots \\
+\hline
+Global Distribution of Dengue Patients/Cases in 2025 & Choropleth Map \\
+\hline
+Sri Lanka Compared with the Top 10 Dengue-Affected Countries Worldwide and Other South-East Asian countries in 2025 & Stacked Bar Chart \\
 \hline
 \end{tabularx}
 \end{table}
 
+One of the additional analyses included in this dashboard is the climate-dengue relationship analysis. In addition to time series plots (Figure 6.a) and scatter plots (Figure 6.b) of climatic variables vs. dengue cases, I explored the potential lag effect using two-week and four-week lag scatter plots (Figure 6.c , Figure 6.d). Dengue transmission does not respond immediately to climatic changes such as rainfall and humidity. Instead, favourable climatic conditions may enhance mosquito breeding and contribute to increased dengue cases after a certain time lag. Based on this idea, I explored the lag relationship between climatic factors and dengue cases. Furthermore, to obtain a comprehensive understanding of the relationship between climatic variables and dengue cases, the Detrended Cross-Correlation Coefficient ($\rho_{DCCA}$) was calculated across different time scales (Figueredo et al., 2023). This method is used to study the relationship between multiple time series that change over time, even when the data are not stationary (Zebende et al., 2018). The calculated $\rho_{DCCA}$ values were plotted over different time scales to investigate how climatic variables influence dengue occurrence across short, medium and long-term periods. 
+
+In this dashboard, several colour palettes were used ensuring that the visualizations are colour-blind friendly. These include the Viridis palette from the viridis package (Garnier et al., 2024), the Paired palette from the ColorBrewer collection (Brewer, 2003), and the Magma palette from the Viridis colour map family (van der Walt & Smith, 2015). In addition, some colour themes were manually defined according to the context of the visualizations.
+
+In this dashboard, multiple visualization techniques have sometimes been used for the same data. Although the data are the same, each visualization provides different insights that can be directly obtained from the data. Therefore, using multiple plots for the same data helps explore different aspects of the actual situation more comprehensively.
+
 ## Results
-
-The dashboard is organized into 8 navigation tabs, including Overview, Last Week Dengue Situation Analysis, District-wise Time Series Trends, District-wise Seasonal Plots, Dengue Patients Distribution, Climate-Dengue Relationship Analysis, Global Comparison, and About. Each tab contains interactive visualizations and analytical outputs. Table 2 provides a description of each tab and summarizes its key content.
-
-
-### Tab 1
 
 ```{r}
 #| label: fig-tab1
@@ -73,7 +88,36 @@ The dashboard is organized into 8 navigation tabs, including Overview, Last Week
 knitr::include_graphics("images/tab1.png")
 ```
 
-## Tab 2
+
+The dashboard is organized into 8 navigation tabs, including Overview, Last Week Dengue Situation Analysis, District-wise Time Series Trends, District-wise Seasonal Plots, Dengue Patients Distribution, Climate-Dengue Relationship Analysis, Global Comparison, and About. Each tab contains interactive visualizations and analytical outputs. Table 2 provides a description of each tab and summarizes its key content.
+
+\begin{table}[H]
+\centering
+\caption{Description of Dashboard Tabs}
+\begin{tabularx}{\textwidth}{|p{2cm}|X|}
+\hline
+\textbf{Tab No.} & \textbf{Description} \\
+\hline
+Tab 1 & This provides the latest information about the dengue epidemic in Sri Lanka. It gives a brief overview of the current dengue situation in Sri Lanka. \\
+\hline
+Tab 2 & This compares the dengue situation in the 26th week of this year with the same week of the previous year. This is the latest data we have. \\
+\hline
+Tab 3 & There are two sub-tabs. The first contains faceted time series plots of weekly dengue cases from 2006 to 2025 for each district separately. The second tab allows users to explore small changes in dengue cases for each district individually using dygraphs. \\
+\hline
+Tab 4 & There are two sub-tabs. The first contains faceted seasonal plots of weekly dengue cases from 2006 to 2025 for each district separately. The second tab allows users to explore small changes in seasonal patterns for each district individually using Plotly graphs. \\
+\hline
+Tab 5 & There are three sub-tabs. The first contains a treemap showing the distribution of total dengue patients in 2025. The second and third sub-tabs contain the distribution of dengue patients over the last 20 years by district and year.   \\
+\hline
+Tab 6 & This section contains five sub-tabs and provides a comprehensive analysis of the relationship between climatic variables and dengue cases. The first four sub-tabs present time series plots and scatter plots to explore temporal patterns and associations between climatic variables and dengue incidence. The fifth sub-tab presents a map displaying the calculated raw DCCA values across different time scales.\\
+\hline
+Tab 7 & This section has three sub-tabs. The first shows the distribution of dengue patients worldwide in 2025. The second and third sub-tabs compare the dengue situation in Sri Lanka with the global and South-East Asia region levels, respectively. \\
+\hline
+Tab 8 & This contains detailed information about the dashboard, data sources, references, and other related information. \\
+\hline
+\end{tabularx}
+\end{table}
+
+According to Figure 1, a rapid increase in dengue cases can be observed in 2026 from around the 21st week compared with 2024 and 2025. Public sources suggest that this increase may be associated with enhanced Aedes mosquito breeding due to favourable climatic conditions, post-flood environmental changes following Cyclone Ditwah, urbanization-related breeding habitats, and ongoing dengue virus transmission dynamics.
 
 ```{r}
 #| label: fig-tab2
@@ -84,7 +128,7 @@ knitr::include_graphics("images/tab1.png")
 knitr::include_graphics("images/tab2.png")
 ```
 
-## Tab 3
+Figure 2 also proves the severity of the situation Sri Lanka faces today. Approximately, the number of cases reported in the 26th week this year is nearly twice that of the same week last year.
 
 ```{r}
 #| label: fig-tab3
@@ -102,6 +146,8 @@ knitr::include_graphics(c(
   "images/tab3.b.png"
 ))
 ```
+
+Figure 3.a shows that many districts experienced notable peaks in dengue cases during 2017, 2019, and 2023. Among these, the 2017 outbreak was the most severe, with consistently high case counts across nearly all districts. According to published reports, Sri Lanka recorded its largest dengue outbreak in 2017, with 186,101 suspected cases and 440 deaths nationwide. Preliminary laboratory investigations identified Dengue virus serotype 2 (DENV-2) as the predominant circulating strain associated with this outbreak.
 
 ## Tab 4
 
@@ -202,3 +248,8 @@ knitr::include_graphics(c(
 
 knitr::include_graphics("images/tab8.png")
 ```
+
+
+The Western Province, particularly the Colombo, Gampaha, and Kalutara districts, has consistently reported the highest dengue burden in the country due to high population density, rapid urbanization, construction activities, environmental conditions favorable for mosquito breeding, and increased human mobility. Dengue transmission in Sri Lanka demonstrates a clear seasonal pattern, with two annual peaks corresponding to the southwest and northeast monsoon periods
+
+From the early 2000s onward, dengue became firmly established as an endemic disease in Sri Lanka, with cases reported from all districts of the country. Large epidemics were recorded in 2002, 2004, 2009, 2017, and 2019. The largest outbreak in Sri Lankan history occurred in 2017, with more than 186,000 reported dengue cases nationally.
