@@ -93,7 +93,7 @@ last_week_comparisson <- last_week_comparisson |>
 
 ::: yellow-box
 **Latest Dengue Surveillance Summary**\
-**Last Updated:** Tuesday, July 07, 2026\| **Latest local data available for:** June 28, 2026
+**Last Updated:** Tuesday, July 05, 2026\| **Latest local data available for:** June 28, 2026
 :::
 
 ## Row {height="20%"}
