@@ -7,6 +7,7 @@ format:
     keep-tex: true
     
 header-includes:
+  - \usepackage{tabularx}
   - \usepackage{float}
 ---
 
@@ -38,11 +39,28 @@ Index No : AS2022642
 
 ## Methodology
 
-Here, I have used several visualization techniques for different purposes.
+Here, several visualization techniques have been used for different purposes. To explore new visualization techniques that can be applied for disease surveillance and epidemiological analysis, the [Sri Lanka COVID-19 Dashboard](https://thiyangt.github.io/coviddashboard/) (Talagala & De Alwis, 2021) was referred to. To get an overall idea of the methodologies, see Table 1.
+
+\begin{table}[H]
+\centering
+\caption{Summary of methodologies used in the dashboard}
+\begin{tabularx}{\textwidth}{|X|p{4cm}|}
+\hline
+\textbf{Information Presented} & \textbf{Visualization Technique(s)} \\
+\hline
+Description of the first methodology. This column is wider and automatically wraps text. & Line Plot \\
+\hline
+Description of the second methodology. & Choropleth Map \\
+\hline
+Description of the third methodology. & Scatter Plot \\
+\hline
+\end{tabularx}
+\end{table}
 
 ## Results
 
 The dashboard is organized into 8 navigation tabs, including Overview, Last Week Dengue Situation Analysis, District-wise Time Series Trends, District-wise Seasonal Plots, Dengue Patients Distribution, Climate-Dengue Relationship Analysis, Global Comparison, and About. Each tab contains interactive visualizations and analytical outputs. Table 2 provides a description of each tab and summarizes its key content.
+
 
 ### Tab 1
 
@@ -149,6 +167,28 @@ knitr::include_graphics(c(
   "images/tab6.c.png",
   "images/tab6.d.png",
   "images/tab6.e.png"
+))
+```
+
+## Tab 7
+
+```{r}
+#| label: fig-tab7
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 7 (Global Comparison)"
+#| fig-subcap:
+#| - ""
+#| - ""
+#| - ""
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| out-width: "98%"
+#| echo: false
+
+knitr::include_graphics(c(
+  "images/tab7.a.png",
+  "images/tab7.b.png",
+  "images/tab7.c.png"
 ))
 ```
 

@@ -108,6 +108,7 @@
 
 
 \KOMAoption{captions}{tableheading}
+\usepackage{tabularx}
 \usepackage{float}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -230,8 +231,28 @@ Index No : AS2022642
 
 \subsection{Methodology}\label{methodology}
 
-Here, I have used several visualization techniques for different
-purposes.
+Here, several visualization techniques have been used for different
+purposes. To explore new visualization techniques that can be applied
+for disease surveillance and epidemiological analysis, the
+\href{https://thiyangt.github.io/coviddashboard/}{Sri Lanka COVID-19
+Dashboard} (Talagala \& De Alwis, 2021) was referred to. To get an
+overall idea of the methodologies, see Table 1.
+
+\begin{table}[H]
+\centering
+\caption{Summary of methodologies used in the dashboard}
+\begin{tabularx}{\textwidth}{|X|p{4cm}|}
+\hline
+\textbf{Information Presented} & \textbf{Visualization Technique(s)} \\
+\hline
+Description of the first methodology. This column is wider and automatically wraps text. & Line Plot \\
+\hline
+Description of the second methodology. & Choropleth Map \\
+\hline
+Description of the third methodology. & Scatter Plot \\
+\hline
+\end{tabularx}
+\end{table}
 
 \subsection{Results}\label{results}
 
@@ -448,6 +469,50 @@ Distribution)}
 
 \caption{\label{fig-tab6}Screenshot of Tab 6 (Climate-Dengue
 Relationship Analysis)}
+
+\end{figure}%
+
+\subsection{Tab 7}\label{tab-7}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab7.a.png}
+
+}
+
+\subcaption{\label{fig-tab7-1}}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab7.b.png}
+
+}
+
+\subcaption{\label{fig-tab7-2}}
+
+\end{minipage}%
+\newline
+\begin{minipage}[t]{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=0.98\linewidth,height=\textheight,keepaspectratio]{images/tab7.c.png}
+
+}
+
+\subcaption{\label{fig-tab7-3}}
+
+\end{minipage}%
+
+\caption{\label{fig-tab7}Screenshot of Tab 7 (Global Comparison)}
 
 \end{figure}%
 
