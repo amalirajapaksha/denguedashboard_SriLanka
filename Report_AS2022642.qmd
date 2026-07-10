@@ -25,7 +25,7 @@ Index No : AS2022642
 
 ## Data
 
--   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at https://github.com/thiyangt/denguedatahub.
+-   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at <https://github.com/thiyangt/denguedatahub>.
 
 -   Data for 2026 are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and the Weekly Dengue Updates published by the National Dengue Control Unit, Ministry of Health, Sri Lanka. These data are extracted through web scraping using the `convert_slwer_to_tidy()` function available in the `denguedatahub` package. The processed datasets are available in `data/sri_lanka_weekly_dengue_cases_2026.csv` and `data/last_week_comparisson.xlsx`.
 
