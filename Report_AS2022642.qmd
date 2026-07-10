@@ -71,7 +71,7 @@ Sri Lanka Compared with the Top 10 Dengue-Affected Countries Worldwide and Other
 \end{tabularx}
 \end{table}
 
-One of the additional analyses included in this dashboard is the climate-dengue relationship analysis. In addition to time series plots (Figure 6.a) and scatter plots (Figure 6.b) of climatic variables vs. dengue cases, I explored the potential lag effect using two-week and four-week lag scatter plots (Figure 6.c , Figure 6.d). Dengue transmission does not respond immediately to climatic changes such as rainfall and humidity. Instead, favourable climatic conditions may enhance mosquito breeding and contribute to increased dengue cases after a certain time lag. Based on this idea, I explored the lag relationship between climatic factors and dengue cases. Furthermore, to obtain a comprehensive understanding of the relationship between climatic variables and dengue cases, the Detrended Cross-Correlation Coefficient ($\rho_{DCCA}$) was calculated across different time scales (Figueredo et al., 2023). This method is used to study the relationship between multiple time series that change over time, even when the data are not stationary (Zebende et al., 2018). The calculated $\rho_{DCCA}$ values were plotted over different time scales to investigate how climatic variables influence dengue occurrence across short, medium and long-term periods. 
+One of the additional analyses included in this dashboard is the climate-dengue relationship analysis. In addition to time series plots (Figure 6.a) and scatter plots (Figure 6.b) of climatic variables vs. dengue cases, I explored the potential lag effect using two-week and four-week lag scatter plots (Figure 6.c , Figure 6.d). Dengue transmission does not respond immediately to climatic changes such as rainfall and humidity. Instead, favourable climatic conditions may enhance mosquito breeding and contribute to increased dengue cases after a certain time lag. Based on this idea, I explored the lag relationship between climatic factors and dengue cases. Furthermore, to obtain a comprehensive understanding of the relationship between climatic variables and dengue cases, the Detrended Cross-Correlation Coefficient ($\rho_{DCCA}$) was calculated across different time scales (Figueredo et al., 2023). This method is used to study the relationship between multiple time series that change over time, even when the data are not stationary (Zebende et al., 2018). The calculated $\rho_{DCCA}$ values were plotted over different time scales to investigate how climatic variables influence dengue occurrence across short, medium and long-term periods.
 
 In this dashboard, several colour palettes were used ensuring that the visualizations are colour-blind friendly. These include the Viridis palette from the viridis package (Garnier et al., 2024), the Paired palette from the ColorBrewer collection (Brewer, 2003), and the Magma palette from the Viridis colour map family (van der Walt & Smith, 2015). In addition, some colour themes were manually defined according to the context of the visualizations.
 
@@ -87,7 +87,6 @@ In this dashboard, multiple visualization techniques have sometimes been used fo
 
 knitr::include_graphics("images/tab1.png")
 ```
-
 
 The dashboard is organized into 8 navigation tabs, including Overview, Last Week Dengue Situation Analysis, District-wise Time Series Trends, District-wise Seasonal Plots, Dengue Patients Distribution, Climate-Dengue Relationship Analysis, Global Comparison, and About. Each tab contains interactive visualizations and analytical outputs. Table 2 provides a description of each tab and summarizes its key content.
 
@@ -128,7 +127,7 @@ According to Figure 1, a rapid increase in dengue cases can be observed in 2026 
 knitr::include_graphics("images/tab2.png")
 ```
 
-Figure 2 also proves the severity of the situation Sri Lanka faces today. Approximately, the number of cases reported in the 26th week this year is nearly twice that of the same week last year.
+Figure 2 also proves the severity of the situation Sri Lanka faces today. Approximately, the number of cases reported in the 26th week this year is nearly twice that of the same week last year.\
 
 ```{r}
 #| label: fig-tab3
@@ -147,9 +146,7 @@ knitr::include_graphics(c(
 ))
 ```
 
-Figure 3.a shows that many districts experienced notable peaks in dengue cases during 2017, 2019, and 2023. Among these, the 2017 outbreak was the most severe, with consistently high case counts across nearly all districts. According to published reports, Sri Lanka recorded its largest dengue outbreak in 2017, with 186,101 suspected cases and 440 deaths nationwide. Preliminary laboratory investigations identified Dengue virus serotype 2 (DENV-2) as the predominant circulating strain associated with this outbreak.
-
-## Tab 4
+1.  Figure 3.a shows that many districts experienced notable peaks in dengue cases during 2017, 2019, and 2023. Among these, the 2017 outbreak was the most severe, with consistently high case counts across nearly all districts. According to published reports, Sri Lanka recorded its largest dengue outbreak in 2017, with 186,101 suspected cases and 440 deaths nationwide. Preliminary laboratory investigations identified Dengue virus serotype 2 (DENV-2) as the predominant circulating strain associated with this outbreak. Heavy monsoon rains and flooding also contributed to the outbreak by creating favourable breeding conditions for Aedes mosquitoes through standing water and inadequate waste management, leading to increased transmission, particularly in urban and suburban areas.
 
 ```{r}
 #| label: fig-tab4
@@ -168,7 +165,7 @@ knitr::include_graphics(c(
 ))
 ```
 
-## Tab 5
+Dengue transmission in Sri Lanka shows a clear seasonal pattern, with two annual peaks corresponding to the Southwest (May to September) and Northeast (October to January) monsoon periods. However, this pattern is not observed uniformly across all districts.
 
 ```{r}
 #| label: fig-tab5
@@ -190,7 +187,9 @@ knitr::include_graphics(c(
 ))
 ```
 
-## Tab 6
+The Southwest monsoon mainly affects districts such as Colombo, Gampaha, Kalutara, Galle, Matara, Hambantota, Kandy, Matale, Nuwara Eliya, Ratnapura, Kegalle, Puttalam, and Kurunegala. In contrast, districts such as Trincomalee, Batticaloa, Ampara, Jaffna, Kilinochchi, Mannar, Mullaitivu, Vavuniya, Badulla, and Monaragala are not significantly affected by the Southwest monsoon. This difference is clearly visible in Figure 4.a. While the Southwest monsoon affected districts show annual peaks in dengue cases during the period from May to September, districts such as Trincomalee, Batticaloa, Ampara, Jaffna, Kilinochchi, Mannar, Vavuniya, Badulla, and Monaragala do not exhibit a similar seasonal peak during this period.
+
+Figure 5.c shows that the Western Province, particularly the districts of Colombo, Gampaha, and Kalutara, has consistently reported the highest dengue burden in the country. As shown in Figure 5.b, these districts are geographically very small. However, the Western Province serves as Sri Lanka's administrative, commercial, and economic hub, attracting a large number of people to live and work in these areas.
 
 ```{r}
 #| label: fig-tab6
@@ -216,7 +215,13 @@ knitr::include_graphics(c(
 ))
 ```
 
-## Tab 7
+Consequently, the population density in these districts is exceptionally high. In addition, rapid urbanization, extensive construction activities, environmental conditions favourable for mosquito breeding, and increased human mobility have further contributed to the high transmission of dengue in the region. Figure 5.a clearly illustrates the hierarchical distribution of dengue cases across all districts in 2025 using a treemap.
+
+Figure 6.a shows a clearly visible relationship between dengue cases and climatic variables, particularly relative humidity, temperature, and rainfall. According to the figure, dengue cases increase when relative humidity is high and temperature is low. During periods with high dengue cases, rainfall is also higher than during other periods.
+
+When Figures 6.b, 6.c, and 6.d are examined, the above-mentioned lag effect can be clearly seen. Among them, the scatter plots in Figure 6.b at a lag of 4 weeks show that the points are more closely clustered and move in the same direction. This indicates a positive relationship between relative humidity and dengue cases and a negative relationship between temperature and dengue cases. However, the relationship between rainfall and dengue cases is not as strong.
+
+However, scatter plots and Pearson correlation coefficients are not very suitable methods for quantifying the strength and direction of relationships in time series data. Therefore, DCCA was used for this purpose. According to the DCCA results shown in Figure 6.e, there is no strong relationship in the short run. However, in the long run, there is a strong positive relationship between relative humidity and dengue cases, while temperature has a strong negative relationship with dengue cases. The relationship between rainfall and dengue cases is moderate in the long run.
 
 ```{r}
 #| label: fig-tab7
@@ -238,7 +243,7 @@ knitr::include_graphics(c(
 ))
 ```
 
-## Tab 8
+Figure 7.a highlights the geographical variation of dengue cases worldwide in 2025, while Figure 7.b compares the global situation with that of Sri Lanka. According to the figure, although Sri Lanka has a lower number of dengue cases, its mortality is comparatively higher, even exceeding that of some of the top 10 countries. However, when considering the South-East Asian countries, Sri Lanka performs better than several regional peers, suggesting comparatively lower mortality. This is shown in Figure 7.c.
 
 ```{r}
 #| label: fig-tab8
@@ -249,7 +254,22 @@ knitr::include_graphics(c(
 knitr::include_graphics("images/tab8.png")
 ```
 
+```{=latex}
+\clearpage
+```
 
-The Western Province, particularly the Colombo, Gampaha, and Kalutara districts, has consistently reported the highest dengue burden in the country due to high population density, rapid urbanization, construction activities, environmental conditions favorable for mosquito breeding, and increased human mobility. Dengue transmission in Sri Lanka demonstrates a clear seasonal pattern, with two annual peaks corresponding to the southwest and northeast monsoon periods
+## References
 
-From the early 2000s onward, dengue became firmly established as an endemic disease in Sri Lanka, with cases reported from all districts of the country. Large epidemics were recorded in 2002, 2004, 2009, 2017, and 2019. The largest outbreak in Sri Lankan history occurred in 2017, with more than 186,000 reported dengue cases nationally.
+1.  Talagala, T. S; De Alwis R. S (2021, December 6). Covid-19 Dashboard Visualisation: Sri Lanka <https://thiyangt.github.io/coviddashboard/>
+
+2.  Figueredo, M. B., Monteiro, R. L. S., do Nascimento Silva, A., de Araújo Fontoura, J. R., da Silva, A. R., & Alves, C. A. P. (2023). Analysis of the correlation between climatic variables and Dengue cases in the city of Alagoinhas/BA. *Scientific Reports*, *13*(1), 7512.
+
+3.  Duque-Lee, C. D., Yu, A. K. D., Ytienza, S. I. E., Yu, A. M. D., Yu, V. C. S., Wangkay, K. A. K., ... & Ysip, G. B. (2020). Correlation between incidence of dengue and climatic factors in the Philippines: An ecological study. *Health Sciences Journal*, *9*(2), 1-1.
+
+4.  Zebende, G. F., Brito, A. A., Silva Filho, A. M., & Castro, A. P. (2018). ρDCCA applied between air temperature and relative humidity: An hour/hour view. *Physica A: Statistical Mechanics and its Applications*, *494*, 17-26.
+
+5.  Brewer, C. A. (2003). *ColorBrewer.org: An online tool for selecting colour schemes for maps.*
+
+6.  Garnier, S., Ross, N., Rudis, B., Camargo, A. P., Sciaini, M., & Scherer, C. (2024). *viridis: Colorblind-Friendly Color Maps for R*. R package version 0.6.5.
+
+7.  van der Walt, S., & Smith, N. (2015). *mpl-colormaps: Viridis and other perceptually uniform colour maps.*
