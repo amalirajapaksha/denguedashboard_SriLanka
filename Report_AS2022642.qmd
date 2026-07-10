@@ -146,7 +146,7 @@ knitr::include_graphics(c(
 ))
 ```
 
-1.  Figure 3.a shows that many districts experienced notable peaks in dengue cases during 2017, 2019, and 2023. Among these, the 2017 outbreak was the most severe, with consistently high case counts across nearly all districts. According to published reports, Sri Lanka recorded its largest dengue outbreak in 2017, with 186,101 suspected cases and 440 deaths nationwide. Preliminary laboratory investigations identified Dengue virus serotype 2 (DENV-2) as the predominant circulating strain associated with this outbreak. Heavy monsoon rains and flooding also contributed to the outbreak by creating favourable breeding conditions for Aedes mosquitoes through standing water and inadequate waste management, leading to increased transmission, particularly in urban and suburban areas.
+Figure 3.a shows that many districts experienced notable peaks in dengue cases during 2017, 2019, and 2023. Among these, the 2017 outbreak was the most severe, with consistently high case counts across nearly all districts. According to published reports, Sri Lanka recorded its largest dengue outbreak in 2017, with 186,101 suspected cases and 440 deaths nationwide. Preliminary laboratory investigations identified Dengue virus serotype 2 (DENV-2) as the predominant circulating strain associated with this outbreak. Heavy monsoon rains and flooding also contributed to the outbreak by creating favourable breeding conditions for Aedes mosquitoes through standing water and inadequate waste management, leading to increased transmission, particularly in urban and suburban areas.
 
 ```{r}
 #| label: fig-tab4
