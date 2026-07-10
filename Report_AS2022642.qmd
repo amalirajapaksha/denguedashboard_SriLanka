@@ -243,6 +243,8 @@ knitr::include_graphics(c(
 ))
 ```
 
+These findings may be highly useful for policy-making purposes and for promoting personal precautionary activities. For example, when a period of high relative humidity is observed for a certain duration, people can be made aware that there may be an increased risk of dengue transmission. Based on such early indications, health authorities can organize public awareness programs, strengthen healthcare facilities, and ensure the availability of necessary medical resources. At the individual level, people can take preventive measures such as cleaning their surroundings to eliminate mosquito breeding sites, using mosquito repellents, and adopting other protective practices to reduce the risk of dengue infection.
+
 Figure 7.a highlights the geographical variation of dengue cases worldwide in 2025, while Figure 7.b compares the global situation with that of Sri Lanka. According to the figure, although Sri Lanka has a lower number of dengue cases, its mortality is comparatively higher, even exceeding that of some of the top 10 countries. However, when considering the South-East Asian countries, Sri Lanka performs better than several regional peers, suggesting comparatively lower mortality. This is shown in Figure 7.c.
 
 ```{r}
