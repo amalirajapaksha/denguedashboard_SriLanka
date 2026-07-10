@@ -2394,11 +2394,11 @@ This dashboard provides an interactive overview of the dengue situation in Sri L
 
 **Data**
 
--   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at https://github.com/thiyangt/denguedatahub.
+-   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at [https://github.com/thiyangt/denguedatahub](https://github.com/thiyangt/denguedatahub).
 
 -   Data for 2026 are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and the Weekly Dengue Updates published by the National Dengue Control Unit, Ministry of Health, Sri Lanka. These data are extracted through web scraping using the `convert_slwer_to_tidy()` function available in the `denguedatahub` package.
 
--   Sri Lanka maps are created using the `ceylon` package in R available here https://github.com/thiyangt/ceylon.
+-   Sri Lanka maps are created using the `ceylon` package in R available [here](https://github.com/thiyangt/ceylon).
 
 -   The global data used in this dashboard are obtained from the World Health Organization's [Global Dengue Surveillance Dashboard](https://worldhealthorg.shinyapps.io/dengue_global/).
 
