@@ -1510,7 +1510,7 @@ ggplotly(g7, tooltip = "text") |>
 ### Time Series Analysis
 
 ```{r}
-#| label: corr_ts
+#| label: correlation_ts
 #| echo: false
 #| warning: false
 #| message: false
