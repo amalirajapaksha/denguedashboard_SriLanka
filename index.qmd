@@ -93,7 +93,7 @@ last_week_comparisson <- last_week_comparisson |>
 
 ::: yellow-box
 **Latest Dengue Surveillance Summary**\
-**Last Updated:** Tuesday, July 05, 2026\| **Latest local data available for:** June 28, 2026
+**Last Updated:** Saturday, July 11, 2026\| **Latest local data available for:** July 09, 2026
 :::
 
 ## Row {height="20%"}
@@ -104,7 +104,7 @@ last_week_comparisson <- last_week_comparisson |>
 #| color: "#5DADE2"
 
 format(
-  sum(weekly_2026$cases, na.rm = TRUE),
+  66064 ,
   big.mark = ",",
   scientific = FALSE
 )
@@ -116,7 +116,7 @@ format(
 #| color: "#DC2626"
 
 format(
-  sum(last_week_comparisson$deaths2026, na.rm = TRUE),
+  sum(46, na.rm = TRUE),
   big.mark = ",",
   scientific = FALSE
 )
@@ -128,7 +128,7 @@ format(
 #| color: "#7570b3"
 
 format(
-  round(sum(weekly_2026$cases, na.rm = TRUE)/26),
+  round(66064/27),
   big.mark = ",",
   scientific = FALSE
 )
@@ -141,10 +141,7 @@ format(
 #| color: "#FFFF00"
 
 format(
-  weekly_2026 |>
-  filter(week == 26) |>
-  summarise(total_cases = sum(cases, na.rm = TRUE)) |>
-  pull(total_cases),
+  7916,
   big.mark = ",",
   scientific = FALSE
 )
