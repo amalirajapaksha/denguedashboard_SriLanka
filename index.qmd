@@ -2383,7 +2383,7 @@ This dashboard provides an interactive overview of the dengue situation in Sri L
 
 **Created by**
 
--   [Y.M. Amali P. Rajapaksha](https://amalipriyanwada.netlify.app/), Department of Statistics, University of Sri Jayewardenepura.
+-   [Y.M. Amali P. Rajapaksha](https://amalipriyanwada.netlify.app/), Department of Statistics, Faculty of Applied Sciences, University of Sri Jayewardenepura.
 
 **Code**
 
