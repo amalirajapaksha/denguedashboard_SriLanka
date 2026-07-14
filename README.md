@@ -1,5 +1,5 @@
 # Sri Lanka Dengue Dashboard
-[![DOI](https://zenodo.org/badge/1268880115.svg)](https://doi.org/10.5281/zenodo.21351718)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21351719.svg)](https://doi.org/10.5281/zenodo.21351719)
 
 This dashboard provides an interactive overview of the dengue situation in Sri Lanka using
 the latest available surveillance data. Built with R using the Quarto Dashboard framework, it
