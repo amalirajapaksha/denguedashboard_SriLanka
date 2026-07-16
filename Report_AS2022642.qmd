@@ -23,7 +23,27 @@ Name : Y.M.A.P. Rajapaksha
 
 Index No : AS2022642
 
-## Data
+## Data Sources
+
+-   Local Data up to December 2025 :
+
+    Talagala, T. (2026). *denguedatahub: A Tidy Format Datasets of Dengue by Country*. R package version 4.1.1. <https://thiyangt.github.io/denguedatahubweb/>
+
+-   Local Data for 2026 :
+
+    Epidemiology Unit. (2026). *Weekly Epidemiological Reports on Dengue Surveillance*. Ministry of Health, Sri Lanka. Available at: <https://www.epid.gov.lk/>
+
+    National Dengue Control Unit. (2026). *Weekly Dengue Updates*. Ministry of Health, Sri Lanka. Available at: <https://www.dengue.health.gov.lk/updates/>
+
+-   Global Data :
+
+    World Health Organization. (2026). *Global Dengue Surveillance Dashboard*. Available at: <https://worldhealthorg.shinyapps.io/dengue_global/>
+
+-   Climate Data :
+
+    NASA Langley Research Center. (2026). *NASA POWER Data Access Viewer*. National Aeronautics and Space Administration. Available at: <https://power.larc.nasa.gov/data-access-viewer/>
+
+## Data Processing and Availability
 
 -   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at <https://github.com/thiyangt/denguedatahub>.
 
@@ -79,17 +99,6 @@ In this dashboard, multiple visualization techniques have sometimes been used fo
 
 ## Results
 
-```{r}
-#| label: fig-tab1
-#| fig-pos: "H"
-#| fig-cap: "Screenshot of Tab 1 (Overview)"
-#| echo: false
-
-knitr::include_graphics("images/tab1.png")
-```
-
-The dashboard is organized into 8 navigation tabs, including Overview, Last Week Dengue Situation Analysis, District-wise Time Series Trends, District-wise Seasonal Plots, Dengue Patients Distribution, Climate-Dengue Relationship Analysis, Global Comparison, and About. Each tab contains interactive visualizations and analytical outputs. Table 2 provides a description of each tab and summarizes its key content.
-
 \begin{table}[H]
 \centering
 \caption{Description of Dashboard Tabs}
@@ -115,6 +124,17 @@ Tab 8 & This contains detailed information about the dashboard, data sources, re
 \hline
 \end{tabularx}
 \end{table}
+
+The dashboard is organized into 8 navigation tabs, including Overview, Last Week Dengue Situation Analysis, District-wise Time Series Trends, District-wise Seasonal Plots, Dengue Patients Distribution, Climate-Dengue Relationship Analysis, Global Comparison, and About. Each tab contains interactive visualizations and analytical outputs. Table 2 provides a description of each tab and summarizes its key content.
+
+```{r}
+#| label: fig-tab1
+#| fig-pos: "H"
+#| fig-cap: "Screenshot of Tab 1 (Overview)"
+#| echo: false
+
+knitr::include_graphics("images/tab1.png")
+```
 
 According to Figure 1, a rapid increase in dengue cases can be observed in 2026 from around the 21st week compared with 2024 and 2025. Public sources suggest that this increase may be associated with enhanced Aedes mosquito breeding due to favourable climatic conditions, post-flood environmental changes following Cyclone Ditwah, urbanization-related breeding habitats, and ongoing dengue virus transmission dynamics.
 
@@ -191,6 +211,8 @@ The Southwest monsoon mainly affects districts such as Colombo, Gampaha, Kalutar
 
 Figure 5.c shows that the Western Province, particularly the districts of Colombo, Gampaha, and Kalutara, has consistently reported the highest dengue burden in the country. As shown in Figure 5.b, these districts are geographically very small. However, the Western Province serves as Sri Lanka's administrative, commercial, and economic hub, attracting a large number of people to live and work in these areas.
 
+Consequently, the population density in these districts is exceptionally high. In addition, rapid urbanization, extensive construction activities, environmental conditions favourable for mosquito breeding, and increased human mobility have further contributed to the high transmission of dengue in the region. Figure 5.a clearly illustrates the hierarchical distribution of dengue cases across all districts in 2025 using a treemap.
+
 ```{r}
 #| label: fig-tab6
 #| fig-pos: "H"
@@ -214,8 +236,6 @@ knitr::include_graphics(c(
   "images/tab6.e.png"
 ))
 ```
-
-Consequently, the population density in these districts is exceptionally high. In addition, rapid urbanization, extensive construction activities, environmental conditions favourable for mosquito breeding, and increased human mobility have further contributed to the high transmission of dengue in the region. Figure 5.a clearly illustrates the hierarchical distribution of dengue cases across all districts in 2025 using a treemap.
 
 Figure 6.a shows a clearly visible relationship between dengue cases and climatic variables, particularly relative humidity, temperature, and rainfall. According to the figure, dengue cases increase when relative humidity is high and temperature is low. During periods with high dengue cases, rainfall is also higher than during other periods.
 
