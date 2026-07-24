@@ -1,6 +1,7 @@
 library(denguedatahub)
 library(readr)
 library(here)
+library(readxl)
 
 download_pdfwer_srilanka(url="https://www.epid.gov.lk/weekly-epidemiological-report/weekly-epidemiological-report", folder.name="dengue", volume.number="Vol_53")
 

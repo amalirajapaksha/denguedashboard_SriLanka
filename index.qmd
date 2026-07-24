@@ -73,8 +73,8 @@ weekly_climate <- read_csv(here("data", "weekly_climate.csv"))
 
 last_week_comparisson <- read_excel("data/last_week_comparisson.xlsx")
 last_week_comparisson$district <- as.character(last_week_comparisson$district)
-last_week_comparisson$`2025_26th`<- as.numeric(last_week_comparisson$`2025_26th`)
-last_week_comparisson$`2026_26th`<- as.numeric(last_week_comparisson$`2026_26th`)
+last_week_comparisson$`2025_29th`<- as.numeric(last_week_comparisson$`2025_29th`)
+last_week_comparisson$`2026_29th`<- as.numeric(last_week_comparisson$`2026_29th`)
 last_week_comparisson$deaths2026 <- as.numeric(last_week_comparisson$deaths2026)
 last_week_comparisson <- last_week_comparisson |>
   mutate(
@@ -82,8 +82,8 @@ last_week_comparisson <- last_week_comparisson |>
   ) |>
   group_by(district) |>
   summarise(
-    `2025_26th` = sum(`2025_26th`, na.rm = TRUE),
-    `2026_26th` = sum(`2026_26th`, na.rm = TRUE),
+    `2025_29th` = sum(`2025_29th`, na.rm = TRUE),
+    `2026_29th` = sum(`2026_29th`, na.rm = TRUE),
     deaths2026 = sum(deaths2026, na.rm = TRUE),
     .groups = "drop"
   )
@@ -93,7 +93,7 @@ last_week_comparisson <- last_week_comparisson |>
 
 ::: yellow-box
 **Latest Dengue Surveillance Summary**\
-**Last Updated:** Saturday, July 11, 2026\| **Latest local data available for:** July 09, 2026
+**Last Updated:** Saturday, July 23, 2026\| **Latest local data available for:** July 19, 2026
 :::
 
 ## Row {height="20%"}
@@ -104,7 +104,7 @@ last_week_comparisson <- last_week_comparisson |>
 #| color: "#5DADE2"
 
 format(
-  66064 ,
+  76034  ,
   big.mark = ",",
   scientific = FALSE
 )
@@ -116,7 +116,7 @@ format(
 #| color: "#DC2626"
 
 format(
-  sum(46, na.rm = TRUE),
+  sum(53, na.rm = TRUE),
   big.mark = ",",
   scientific = FALSE
 )
@@ -128,7 +128,7 @@ format(
 #| color: "#7570b3"
 
 format(
-  round(66064/27),
+  round(76034 /29),
   big.mark = ",",
   scientific = FALSE
 )
@@ -141,7 +141,7 @@ format(
 #| color: "#FFFF00"
 
 format(
-  7916,
+  7385,
   big.mark = ",",
   scientific = FALSE
 )
@@ -463,7 +463,7 @@ g3 <- ggplot(
     x = "Week Number",
     y = "Cases"
   ) +
-  coord_cartesian(ylim = c(0, 6000)) +
+  coord_cartesian(ylim = c(0, 8500)) +
   theme_minimal(base_size = 14) +
   theme(
     plot.title = element_text(face = "bold", size = 10, hjust = 0.5),
@@ -492,7 +492,7 @@ ggplotly(g3) |>
 
 
 district_df_2026 <- last_week_comparisson |>
-  select(district, `2026_26th`)
+  select(district, `2026_29th`)
 
 data(district)
 district_df_2026 <- district_df_2026 |>
@@ -517,28 +517,28 @@ map_data_2026 <- left_join(
   district_df2_2026,
   by = c("DISTRICT_clean" = "DISTRICT_match")
 ) |>
-drop_na(`2026_26th`)  
+drop_na(`2026_29th`)  
 
 
 map_data_2026 <- map_data_2026 |>
   mutate(
     case2026_cat = case_when(
       
-      `2026_26th` == 0                         ~ "0",
+      `2026_29th` == 0                         ~ "0",
       
-      `2026_26th` >= 1 & `2026_26th` <= 10     ~ "1-10",
+      `2026_29th` >= 1 & `2026_29th` <= 10     ~ "1-10",
       
-      `2026_26th` >= 11 & `2026_26th` <= 30    ~ "11-30",
+      `2026_29th` >= 11 & `2026_29th` <= 30    ~ "11-30",
       
-      `2026_26th` >= 31 & `2026_26th` <= 60    ~ "31-60",
+      `2026_29th` >= 31 & `2026_29th` <= 60    ~ "31-60",
       
-      `2026_26th` >= 61 & `2026_26th` <= 100   ~ "61-100",
+      `2026_29th` >= 61 & `2026_29th` <= 100   ~ "61-100",
       
-      `2026_26th` >= 101 & `2026_26th` <= 150  ~ "101-150",
+      `2026_29th` >= 101 & `2026_29th` <= 150  ~ "101-150",
       
-      `2026_26th` >= 151 & `2026_26th` <= 250  ~ "151-250",
+      `2026_29th` >= 151 & `2026_29th` <= 250  ~ "151-250",
       
-      `2026_26th` >= 250                       ~ "250+",
+      `2026_29th` >= 250                       ~ "250+",
       
       TRUE ~ NA_character_
     )
@@ -566,7 +566,7 @@ p1 <- ggplot(map_data_2026) +
           colour = "black",
           linewidth = 0.4) +
   geom_sf_text(
-    aes(label = `2026_26th`),
+    aes(label = `2026_29th`),
     size = 3.25,
     color = "black",
     fontface = "bold"
@@ -587,7 +587,7 @@ p1 <- ggplot(map_data_2026) +
     drop = FALSE
   ) +
   labs(
-    title = "Cases in Last Week (26th Week)"
+    title = "Cases in Last Week (29th Week)"
   ) +
   theme_minimal(base_size = 14) +
   theme(
@@ -618,7 +618,7 @@ p1
 
 district_df_diff <- last_week_comparisson |>
   mutate(
-    diff = `2026_26th` - `2025_26th`
+    diff = `2026_29th` - `2025_29th`
   ) |>
   select(district, diff)
 
@@ -722,7 +722,7 @@ p2 <- ggplot(map_data_diff) +
     drop = FALSE
   ) +
   labs(
-    title = "Additional Cases in 26th Week Compared to that Week in 2025"
+    title = "Additional Cases in 29th Week Compared to that Week in 2025"
   ) +
   theme_minimal(base_size = 14) +
   theme(
@@ -2391,15 +2391,23 @@ This dashboard provides an interactive overview of the dengue situation in Sri L
 
 **Data**
 
--   All local data up to December 2025 used in this dashboard are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, through the `denguedatahub` R package, available at [https://github.com/thiyangt/denguedatahub](https://github.com/thiyangt/denguedatahub).
+-   Local Data up to December 2025 :
 
--   Data for 2026 are obtained from the weekly epidemiological reports published by the Epidemiology Unit, Ministry of Health, Sri Lanka, and the Weekly Dengue Updates published by the National Dengue Control Unit, Ministry of Health, Sri Lanka. These data are extracted through web scraping using the `convert_slwer_to_tidy()` function available in the `denguedatahub` package.
+    -   Talagala, T. (2026). *denguedatahub: A Tidy Format Datasets of Dengue by Country*. R package version 4.1.1. <https://thiyangt.github.io/denguedatahubweb/>
 
--   Sri Lanka maps are created using the `ceylon` package in R available [here](https://github.com/thiyangt/ceylon).
+-   Local Data for 2026 :
 
--   The global data used in this dashboard are obtained from the World Health Organization's [Global Dengue Surveillance Dashboard](https://worldhealthorg.shinyapps.io/dengue_global/).
+    -   Epidemiology Unit. (2026). *Weekly Epidemiological Reports on Dengue Surveillance*. Ministry of Health, Sri Lanka. Available at: <https://www.epid.gov.lk/>
 
--   The climate data used in this study were downloaded from the [NASA POWER Data Access Viewer](https://power.larc.nasa.gov/data-access-viewer/), provided by the National Aeronautics and Space Administration (NASA).
+    -   National Dengue Control Unit. (2026). *Weekly Dengue Updates*. Ministry of Health, Sri Lanka. Available at: <https://www.dengue.health.gov.lk/updates/>
+
+-   Global Data :
+
+    -   World Health Organization. (2026). *Global Dengue Surveillance Dashboard*. Available at: <https://worldhealthorg.shinyapps.io/dengue_global/>
+
+-   Climate Data :
+
+    -   NASA Langley Research Center. (2026). *NASA POWER Data Access Viewer*. National Aeronautics and Space Administration. Available at: <https://power.larc.nasa.gov/data-access-viewer/>
 
 **Remarks**
 
@@ -2409,6 +2417,12 @@ This dashboard provides an interactive overview of the dengue situation in Sri L
 
 **References**
 
--   **Visualization techniques:** Referenced the [Sri Lanka COVID-19 Dashboard](https://thiyangt.github.io/coviddashboard/) to explore and adapt visualization techniques that can be applied for disease surveillance and epidemiological analysis, including interactive summaries and temporal trend visualization.
+-   **Visualization techniques:**
 
--   **Climate–dengue correlation analysis methods:** Reviewed statistical approaches from the papers *"Analysis of the correlation between climatic variables and Dengue cases in the city of Alagoinhas/BA"* by Marcos Batista Figueredo et al. and *"Correlation between incidence of dengue and climatic factors in the Philippines: An ecological study"* by Ann Kashmer D. Yu et al. to identify suitable methods for analysing relationships between climatic variables and dengue incidence.
+    -   Talagala, T. S., & De Alwis, R. S. (2021, December 6). *COVID-19 Dashboard Visualisation: Sri Lanka* [COVID-19 Dashboard Visualisation: Sri Lanka](https://thiyangt.github.io/coviddashboard)
+
+-   **Climate–dengue correlation analysis methods:**
+
+    -   Figueredo, M. B., Monteiro, R. L. S., do Nascimento Silva, A., de Araújo Fontoura, J. R., da Silva, A. R., & Alves, C. A. P. (2023). *Analysis of the correlation between climatic variables and Dengue cases in the city of Alagoinhas/BA*. Scientific Reports, 13, 7512. https://doi.org/10.1038/s41598-023-34349-8
+
+    -   Yu, A. K. D., Ytienza, S. I. E., Yu, A. M. D., Yu, V. C. S., Wangkay, K. A. K., Wong, M. A. R., Zamudio, M. A. B., Zhang, E. M. T., Yumul, W., Zipagan, Z. M. R., Yaranon, A. K. R., Zapanta, J. B. C., Ysip, G. B., & Duque-Lee, C. D. (2020). *Correlation between incidence of dengue and climatic factors in the Philippines: An ecological study*. Health Sciences Journal, 9(2), 60–68.
