@@ -71,3 +71,24 @@ readr::write_csv(
   here("data","sri_lanka_weekly_dengue_cases_2026.csv")
 )
 
+
+
+# Combine week 27-29 data
+
+week29_2026_data <- read_excel(here("raw-data","2026_27-29_weekly_data.xlsx"))
+
+week29_2026_data$year <- as.numeric(week29_2026_data$year)
+week29_2026_data$week <- as.numeric(week29_2026_data$week)
+week29_2026_data$start.date <- as.Date(week29_2026_data$start.date)
+week29_2026_data$end.date <- as.Date(week29_2026_data$end.date)
+week29_2026_data$district <- as.character(week29_2026_data$district)
+week29_2026_data$cases <- as.numeric(week29_2026_data$cases)
+
+week_29_combined_2026_data <- rbind(combined_2026_data, week29_2026_data)
+
+# Save as CSV
+readr::write_csv(
+  week_29_combined_2026_data,
+  here("data","sri_lanka_weekly_dengue_cases_2026.csv")
+)
+
