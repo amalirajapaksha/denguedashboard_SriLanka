@@ -2379,6 +2379,8 @@ g12 |>
 
 # About
 
+![](images/logo.png){width="100px" style="float:left; margin-right:1em;"} **Sri Lanka Dengue Dashboard**
+
 This dashboard provides an interactive overview of the dengue situation in Sri Lanka using the latest available surveillance data. Built with R using the Quarto Dashboard framework, it presents recent dengue trends, district-level analyses, historical patterns, comparisons with the global dengue situation, and explores the relationship between dengue transmission and key climate variables. The dashboard offers valuable insights for monitoring, understanding, and supporting evidence-based decision-making on dengue dynamics in Sri Lanka.
 
 **Created by**
